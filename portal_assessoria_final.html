@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Portal de Assessoria Affinity</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+:root{--gold:#C9913A;--gold-bg:#fdf3e7;--gold-dark:#a8731e;--purple:#4A2050;--purple-bg:#f5eef8;--purple-light:#ede0f2}
+body{background:#f4f4f6;min-height:100vh}
+.portal-header{background:var(--purple);padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.portal-logo{display:flex;align-items:center;gap:12px}
+.portal-logo-icon{width:40px;height:40px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.portal-logo-icon i{font-size:22px;color:#fff}
+.portal-logo-text h1{font-size:16px;font-weight:700;color:#fff;line-height:1.2}
+.portal-logo-text p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.portal-badge{font-size:11px;font-weight:700;color:var(--gold);background:rgba(201,145,58,.15);border:1px solid rgba(201,145,58,.4);padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.nav-tabs{display:flex;border-bottom:2px solid var(--purple-light);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.nav-tab{flex:1;padding:12px 16px;font-size:13px;font-weight:700;color:var(--purple);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.nav-tab i{font-size:15px}
+.nav-tab.active{border-bottom-color:var(--gold);color:var(--gold)}
+.nav-tab:hover:not(.active){background:var(--gold-bg)}
+.section{display:none;padding:1.25rem;max-width:960px;margin:0 auto}
+.section.active{display:block}
+.filter-bar{background:#fff;border-radius:12px;padding:.875rem 1.1rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.filter-label{font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-weight:700;transition:all .15s;white-space:nowrap}
+.chip.active{background:var(--purple);color:#fff}
+.chip:hover:not(.active){background:var(--purple-bg)}
+.comm-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:1rem}
+.comm-card-header{background:var(--purple);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.comm-card-header span{font-size:13px;font-weight:700;color:#fff}
+.comm-card-header .sub{font-size:11px;color:rgba(255,255,255,.6);margin-left:4px}
+.comm-table{width:100%;border-collapse:collapse;font-size:12px}
+.comm-table th{background:var(--purple);color:rgba(255,255,255,.85);padding:8px 10px;text-align:center;font-size:11px;font-weight:700;border-bottom:2px solid var(--gold)}
+.comm-table th.left{text-align:left;padding-left:14px}
+.comm-table td{padding:9px 10px;border-bottom:.5px solid #eee;text-align:center;font-size:12px;color:#111}
+.comm-table td.left{text-align:left;font-weight:700;color:var(--purple);padding-left:14px}
+.comm-table td.total{font-weight:700;color:var(--gold-dark);font-size:13px}
+.comm-table tr:last-child td{border-bottom:none}
+.comm-table tr:nth-child(even) td{background:var(--gold-bg)}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.pill-pme{background:#e8f4fd;color:#1565C0}.pill-pf{background:#e8f8ee;color:#2E7D32}.pill-pj{background:#fdf3e7;color:#a8731e}
+.vit-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#e8f8ee;color:#2E7D32}
+.dash{color:#ccc}
+.comm-note{font-size:11px;color:#666;padding:8px 14px;background:var(--gold-bg);display:flex;align-items:flex-start;gap:6px}
+.comm-note i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
+.comm-footer{font-size:11px;color:#555;padding:10px 14px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);display:flex;align-items:center;gap:6px}
+.comm-footer i{color:var(--purple)}
+
+/* Corretor ID card */
+.corretor-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-left:4px solid var(--gold)}
+.corretor-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.corretor-head i{color:var(--gold);font-size:15px}
+.corretor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cf{display:flex;flex-direction:column;gap:3px}
+.cf.full{grid-column:1/-1}
+.cf label{font-size:11px;font-weight:700;color:var(--purple)}
+.cf input{border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;transition:border .15s}
+.cf input:focus{outline:none;border-color:var(--gold)}
+.cf input.error{border-color:#c62828;background:#fff8f8}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:#888;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.empty-state i{font-size:36px;display:block;margin-bottom:10px;color:var(--gold)}
+.op-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.op-badge-pill{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:var(--gold);color:#fff}
+.op-title{font-size:15px;font-weight:700;color:var(--purple)}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cat-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--gold)}
+.cat-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.cat-head i{font-size:15px;color:var(--gold)}
+.tag-obrig{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--gold-bg);color:var(--gold-dark);margin-left:4px;font-weight:700}
+.doc-list{list-style:none}
+.doc-item{padding:7px 0;border-bottom:.5px solid #f0f0f0}
+.doc-item:last-child{border-bottom:none}
+.doc-row{display:flex;align-items:flex-start;gap:8px}
+.doc-icon{font-size:13px;color:var(--gold);flex-shrink:0;margin-top:2px}
+.doc-name{flex:1;font-size:12px;color:#222;line-height:1.45}
+.doc-chk{width:19px;height:19px;border-radius:50%;border:2px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:1px}
+.doc-chk.on{background:var(--gold);border-color:var(--gold)}
+.doc-chk.on::after{content:"✓";font-size:10px;color:#fff;font-weight:700}
+.doc-actions{display:flex;align-items:center;gap:6px;margin-top:5px;padding-left:21px;flex-wrap:wrap}
+.dl-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;background:#fff;transition:all .15s;text-decoration:none}
+.dl-pdf{color:#c62828;border-color:rgba(198,40,40,.3)}.dl-pdf:hover{background:#c62828;color:#fff}
+.dl-word{color:#1565C0;border-color:rgba(21,101,192,.3)}.dl-word:hover{background:#1565C0;color:#fff}
+.dl-excel{color:#2E7D32;border-color:rgba(46,125,50,.3)}.dl-excel:hover{background:#2E7D32;color:#fff}
+.up-lbl{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--purple);cursor:pointer;padding:4px 11px;border-radius:6px;border:1.5px dashed var(--purple);background:#fff}
+.up-lbl:hover{background:var(--purple-bg)}
+.up-lbl input{display:none}
+.f-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:var(--gold-dark)}
+.f-rm{cursor:pointer;color:var(--gold);margin-left:2px}
+.add-doc-btn{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--purple);cursor:pointer;background:none;border:none;font-family:Arial,sans-serif;padding:0}
+.info-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:var(--purple-bg);font-size:11px;color:var(--purple);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.info-box i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
+.warn-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:#fff3e0;font-size:11px;color:#bf360c;display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.warn-box i{color:#E65100;flex-shrink:0;margin-top:1px;font-size:13px}
+.footer-doc{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:1rem;padding:1rem 1.1rem;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.prog-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:180px}
+.prog-txt{font-size:12px;font-weight:700;color:var(--purple);white-space:nowrap}
+.prog-bar-bg{flex:1;background:var(--purple-light);border-radius:20px;height:6px;overflow:hidden}
+.prog-bar{height:100%;border-radius:20px;background:var(--gold);transition:width .3s}
+.btn-send{padding:9px 20px;border-radius:8px;background:var(--purple);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif}
+.btn-send:hover{background:#3a1840}
+.btn-send:disabled{opacity:.5;cursor:not-allowed}
+
+/* Sending overlay */
+.sending-overlay{display:none;position:fixed;inset:0;background:rgba(74,32,80,.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sending-overlay.open{display:flex}
+.sending-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sending-text{color:#fff;font-size:15px;font-weight:700}
+.success-icon{font-size:48px;color:var(--gold)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;border:2px solid var(--purple);padding:1.5rem;width:440px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-handle{display:none;width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1rem}
+.modal-ttl{font-size:15px;font-weight:700;color:var(--purple);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.modal-ttl i{color:var(--gold)}
+.mf{margin-bottom:10px}
+.mf label{font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:4px}
+.mf input,.mf textarea{width:100%;border-radius:8px;border:1.5px solid var(--gold);padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111}
+.mf textarea{resize:none}
+.modal-preview{font-size:12px;color:#666;background:#f9fafb;border-radius:8px;padding:10px;margin:10px 0;line-height:1.8;max-height:130px;overflow-y:auto}
+.modal-note{font-size:11px;color:#666;background:var(--gold-bg);border-radius:8px;padding:8px 10px;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px}
+.modal-note i{color:var(--gold);flex-shrink:0}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{padding:7px 16px;border-radius:8px;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-size:13px;cursor:pointer;font-weight:700;font-family:Arial,sans-serif}
+.btn-confirm{padding:7px 18px;border-radius:8px;background:var(--purple);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;display:flex;align-items:center;gap:6px}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+
+/* Form cards */
+.form-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-top:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--purple)}
+.form-card-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.form-card-head i{color:var(--gold)}
+.fgt{font-size:10px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;padding-bottom:4px;border-bottom:.5px solid var(--gold-bg)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ff{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.ff label{font-size:11px;font-weight:700;color:var(--purple)}
+.ff input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;transition:border .15s}
+.ff input:focus{outline:none;border-color:var(--gold)}
+.opcao-row{display:flex;gap:8px;margin:8px 0}
+.opcao-btn{flex:1;padding:8px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#888;font-size:12px;font-weight:700;cursor:pointer;text-align:center;font-family:Arial,sans-serif;transition:all .15s}
+.opcao-btn.sel{border-color:var(--gold);background:var(--gold-bg);color:var(--gold-dark)}
+.cmt{width:100%;border-collapse:collapse;font-size:11px;margin:6px 0 10px}
+.cmt th{background:var(--purple);color:#fff;padding:5px 8px;text-align:center;font-size:10px}
+.cmt th.left{text-align:left}
+.cmt td{padding:5px 8px;border-bottom:.5px solid #eee;text-align:center;font-size:11px}
+.cmt td.left{text-align:left;color:#555}
+.cmt tr:last-child td{border-bottom:none}
+.cmt tr:nth-child(even) td{background:var(--gold-bg)}
+.cmt td.hi{font-weight:700;color:var(--gold-dark)}
+.form-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.btn-clear{padding:7px 16px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:Arial,sans-serif}
+.btn-copy{padding:7px 18px;border-radius:8px;background:var(--gold);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;display:flex;align-items:center;gap:5px}
+.copy-ok{font-size:11px;color:#2E7D32;margin-top:6px;text-align:right;display:none}
+
+/* Steps Unimed */
+.steps-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-bottom:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.steps-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.steps-head i{color:var(--gold)}
+.step-item{display:flex;gap:12px;padding:10px 0;border-bottom:.5px solid #f0f0f0}
+.step-item:last-child{border-bottom:none}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-body{flex:1}
+.step-title{font-size:12px;font-weight:700;color:var(--purple);margin-bottom:2px}
+.step-desc{font-size:11px;color:#666;line-height:1.5}
+.step-tag{display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.tag-a{background:#fff3e0;color:#E65100}.tag-p{background:#e8f4e8;color:#2E7D32}.tag-c{background:var(--purple-bg);color:var(--purple)}
+.btn-site{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:5px 12px;border-radius:6px;background:var(--purple);color:#fff;font-size:11px;font-weight:700;text-decoration:none}
+.com-card{background:var(--purple-bg);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.com-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:.875rem;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.com-head i{color:var(--gold)}
+.ai{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:6px;font-size:12px;line-height:1.4}
+.ai:last-child{margin-bottom:0}
+.ai-gold{background:var(--gold-bg);border:1px solid rgba(201,145,58,.3)}.ai-gold i{color:var(--gold);flex-shrink:0}
+.ai-red{background:#fff3f3;border:1px solid rgba(200,0,0,.15)}.ai-red i{color:#c62828;flex-shrink:0}
+.ai-pur{background:#fff;border:1px solid var(--purple-light)}.ai-pur i{color:var(--purple);flex-shrink:0}
+.cv{font-size:18px;font-weight:700;color:var(--purple);margin:2px 0}
+.cv span{font-size:13px;font-weight:400;color:#666}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:640px){
+  .portal-header{padding:.875rem 1rem}
+  .portal-logo-text h1{font-size:14px}
+  .portal-logo-text p{display:none}
+  .portal-badge{font-size:10px;padding:3px 9px}
+  .nav-tab{font-size:12px;padding:10px 8px}
+  .nav-tab i{display:none}
+  .section{padding:.875rem}
+  .comm-card-header .sub{display:none}
+  .comm-table{font-size:11px}
+  .comm-table th,.comm-table td{padding:6px 5px}
+  .comm-table th:nth-child(6),.comm-table td:nth-child(6),
+  .comm-table th:nth-child(7),.comm-table td:nth-child(7){display:none}
+  .corretor-grid{grid-template-columns:1fr}
+  .doc-grid{grid-template-columns:1fr}
+  .footer-doc{flex-direction:column;gap:8px}
+  .btn-send{width:100%;justify-content:center}
+  .modal-overlay{align-items:flex-end}
+  .modal-box{border-radius:16px 16px 0 0;width:100%;max-height:88vh;border-left:none;border-right:none;border-bottom:none}
+  .modal-handle{display:block}
+  .modal-actions{flex-direction:row}
+  .btn-cancel{flex:1}.btn-confirm{flex:2;justify-content:center}
+  .mf input,.mf textarea,.ff input,.cf input{font-size:16px}
+  .form-actions{flex-direction:row;justify-content:stretch}
+  .btn-clear,.btn-copy{flex:1;justify-content:center}
+  .fg2{grid-template-columns:1fr}
+  .opcao-row{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- Sending overlay -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="sending-spinner" id="sending-spinner"></div>
+  <i class="ti ti-check success-icon" id="success-icon" style="display:none"></i>
+  <div class="sending-text" id="sending-text">Enviando...</div>
+</div>
+
+<div class="portal-header">
+  <div class="portal-logo">
+    <div class="portal-logo-icon"><i class="ti ti-building-community"></i></div>
+    <div class="portal-logo-text">
+      <h1>Portal de Assessoria Affinity</h1>
+      <p>Corretora de Seguros</p>
+    </div>
+  </div>
+  <span class="portal-badge"><i class="ti ti-shield-check" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>Área do Corretor</span>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="comissoes"><i class="ti ti-chart-bar"></i>Tabela de comissões</div>
+  <div class="nav-tab" data-tab="documentos"><i class="ti ti-files"></i>Documentos</div>
+</div>
+
+<!-- TAB COMISSÕES -->
+<div id="tab-comissoes" class="section active">
+  <div class="filter-bar">
+    <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
+    <div class="chips" id="comm-chips">
+      <div class="chip active" data-comm="todas">Todas</div>
+      <div class="chip" data-comm="amil">Amil</div>
+      <div class="chip" data-comm="assim">Assim Saúde</div>
+      <div class="chip" data-comm="hapvida">Hapvida</div>
+      <div class="chip" data-comm="leve">Leve Saúde</div>
+      <div class="chip" data-comm="medsênior">MedSênior</div>
+      <div class="chip" data-comm="select">Select</div>
+      <div class="chip" data-comm="unimed">Seguros Unimed</div>
+    </div>
+  </div>
+  <div class="comm-card">
+    <div class="comm-card-header">
+      <i class="ti ti-star" style="font-size:15px;color:var(--gold)"></i>
+      <span>Agenciamento + Vitalício — Affinity Corretora</span>
+      <span class="sub">Multinotas</span>
+    </div>
+    <table class="comm-table">
+      <thead><tr>
+        <th class="left">Operadora</th><th>Produto</th><th>Total</th>
+        <th>1ª</th><th>2ª</th><th>3ª</th><th>4ª</th><th>Vitalício</th>
+      </tr></thead>
+      <tbody id="comm-tbody"></tbody>
+    </table>
+    <div class="comm-note"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente. Select PME: demais parcelas = 10%/mês.</span></div>
+  </div>
+  <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
+</div>
+
+<!-- TAB DOCUMENTOS -->
+<div id="tab-documentos" class="section">
+
+  <!-- Identificação do corretor -->
+  <div class="corretor-card">
+    <div class="corretor-head"><i class="ti ti-user-circle"></i>Identificação do corretor</div>
+    <div class="corretor-grid">
+      <div class="cf"><label>Código Sis *</label><input type="text" id="cor_sis" placeholder="Ex: 12345"></div>
+      <div class="cf"><label>Nome completo *</label><input type="text" id="cor_nome" placeholder="Nome do corretor"></div>
+      <div class="cf"><label>Telefone *</label><input type="tel" id="cor_tel" placeholder="(00) 00000-0000"></div>
+      <div class="cf"><label>E-mail *</label><input type="email" id="cor_email" placeholder="email@empresa.com" autocomplete="email"></div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
+    <div class="chips" id="doc-chips">
+      <div class="chip active" data-op="">Selecione...</div>
+      <div class="chip" data-op="amil">Amil</div>
+      <div class="chip" data-op="assim_saude">Assim Saúde</div>
+      <div class="chip" data-op="hapvida">Hapvida</div>
+      <div class="chip" data-op="leve_saude">Leve Saúde</div>
+      <div class="chip" data-op="medsênior">MedSênior</div>
+      <div class="chip" data-op="seguros_unimed">Seguros Unimed</div>
+      <div class="chip" data-op="select">Select</div>
+    </div>
+  </div>
+
+  <div id="doc-content">
+    <div class="empty-state"><i class="ti ti-hand-click"></i><p>Selecione uma operadora para ver os documentos necessários</p></div>
+  </div>
+
+  <div id="doc-footer" style="display:none">
+    <div class="footer-doc">
+      <div class="prog-wrap">
+        <span class="prog-txt" id="prog-txt">0 de 0 confirmados</span>
+        <div class="prog-bar-bg"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+      </div>
+      <button class="btn-send" id="btn-send"><i class="ti ti-send"></i>Enviar processo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmação -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <span class="modal-handle"></span>
+    <p class="modal-ttl"><i class="ti ti-send"></i>Confirmar envio do processo</p>
+    <div class="modal-preview" id="modal-preview"></div>
+    <div class="modal-note"><i class="ti ti-info-circle"></i><span>Será enviado automaticamente para <strong>assessoria@affinitycorretora.com.br</strong> e uma cópia para o e-mail do corretor.</span></div>
+    <div class="mf"><label>Observações (opcional)</label><textarea id="e-obs" rows="2" placeholder="Alguma observação adicional..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm"><i class="ti ti-send"></i>Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG EMAILJS ──────────────────────────────────────────────────────────
+var EMAILJS_PUBLIC_KEY  = "i0baUTbhdjYvFkT9c";
+var EMAILJS_SERVICE_ID  = "service_gvedztq";
+var TEMPLATE_ASSESSORIA = "template_assessoria"; // EmailJS
+var TEMPLATE_CORRETOR   = "template_corretor";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ─── BASE URL DOWNLOADS ───────────────────────────────────────────────────────
+var BASE = "https://hellanysouza-ai.github.io/portal-assessoria/docs/";
+var FILES = {
+  amil_anticorrupcao:   {url:BASE+"carta-anticorrupcao-amil.pdf",        label:"Carta Anticorrupção",    cls:"dl-pdf"},
+  amil_vinculacao:      {url:BASE+"termo-vinculacao-amil.docx",           label:"Termo de Vinculação",    cls:"dl-word"},
+  amil_formulario:      {url:BASE+"formulario-cadastro-amil.pdf",         label:"Formulário Cadastral",   cls:"dl-pdf"},
+  amil_desvinculacao:   {url:BASE+"termo-desvinculacao-amil.docx",        label:"Termo de Desvinculação", cls:"dl-word"},
+  assim_ficha:          {url:BASE+"ficha-cadastral-assim.xlsx",            label:"Ficha Cadastral",        cls:"dl-excel"},
+  assim_contrato:       {url:BASE+"contrato-modelo-pj-assim.docx",        label:"Contrato Modelo PJ",     cls:"dl-word"},
+  hapvida_confirmacao:  {url:BASE+"confirmacao-dados-bancarios-hapvida.docx",label:"Confirmação Bancária",cls:"dl-word"},
+  hapvida_agenciamento: {url:BASE+"carta-agenciamento-hapvida.docx",      label:"Carta Agenciamento",     cls:"dl-word"},
+  hapvida_checklist:    {url:BASE+"checklist-abertura-hapvida.xlsx",      label:"Checklist Abertura",     cls:"dl-excel"},
+  leve_pdf:             {url:BASE+"formulario-particionamento-leve.pdf",   label:"Formulário PDF",         cls:"dl-pdf"},
+  leve_doc:             {url:BASE+"formulario-particionamento-leve.docx",  label:"Formulário Word",        cls:"dl-word"},
+  med_checklist:        {url:BASE+"checklist-medsênior.docx",             label:"Checklist MedSênior",    cls:"dl-word"}
+};
+
+// ─── COMISSÕES ────────────────────────────────────────────────────────────────
+var comissoes=[
+  {op:"amil",     nome:"Amil",          prod:"PME",tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",  vit:"2% vit."},
+  {op:"hapvida",  nome:"Hapvida",       prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."},
+  {op:"leve",     nome:"Leve Saúde",    prod:"PF", tot:"150%",p1:"100%",p2:"50%", p3:"–",   p4:"–",  vit:"2% vit."},
+  {op:"leve",     nome:"Leve Saúde",    prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"25%", p4:"25%",vit:"2% vit."},
+  {op:"medsênior",nome:"MedSênior",     prod:"PF", tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"–"},
+  {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
+  {op:"select",   nome:"Select",        prod:"PF", tot:"200%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%"},
+  {op:"select",   nome:"Select",        prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"2% vit."},
+  {op:"select",   nome:"Select",        prod:"Emp",tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2%"},
+  {op:"unimed",   nome:"Seguros Unimed",prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."}
+];
+var filtroComm="todas";
+function renderComm(){
+  var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
+  var pc={"PME":"pill pill-pme","PF":"pill pill-pf","Emp":"pill pill-pj"};
+  document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
+    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
+    var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
+    return "<tr><td class=\"left\">"+r.nome+"</td><td><span class=\""+pc[r.prod]+"\">"+r.prod+"</span></td><td class=\"total\">"+r.tot+"</td><td>"+mkC(r.p1)+"</td><td>"+mkC(r.p2)+"</td><td>"+mkC(r.p3)+"</td><td>"+mkC(r.p4)+"</td><td>"+vh+"</td></tr>";
+  }).join("");
+}
+document.getElementById("comm-chips").addEventListener("click",function(e){
+  var c=e.target.closest(".chip");if(!c)return;
+  filtroComm=c.dataset.comm||"todas";
+  document.querySelectorAll("#comm-chips .chip").forEach(function(x){x.classList.remove("active");});
+  c.classList.add("active");renderComm();
+});
+
+// ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
+var dados={
+  amil:{nome:"Amil",form:"amil",cats:[
+    {id:"amil_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
+     info:"CNAEs aceitos: 66.22.300 / 66.29.100 / 65.50.200. Multinotas somente se o corretor já estiver no Sis.",warn:null,
+     docs:[
+      {t:"Comprovante bancário (banco, agência e conta corrente com nome ou CNPJ da corretora)"},
+      {t:"Contrato social (com o sócio administrador inserido no processo)"},
+      {t:"Cópia de nota fiscal — ou foto da tela da Prefeitura com URL, nome, CNPJ e inscrição municipal"},
+      {t:"RG ou CNH do(s) sócio(s) administrador(es)"},
+      {t:"Comprovante de endereço do sócio (últimos 90 dias)"},
+      {t:"Cartão CNPJ emitido na Receita Federal"},
+      {t:"Carta Anticorrupção — assinada e rubricada em todas as páginas",dl:"amil_anticorrupcao"},
+      {t:"Termo de Vinculação — apenas preenchido (assinatura digital posterior)",dl:"amil_vinculacao"},
+      {t:"Formulário cadastral — preenchido nas duas páginas",dl:"amil_formulario"},
+      {t:"E-mail e telefone nominais dos sócios"},
+      {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)"}
+    ]},
+    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:false,info:null,
+     warn:"Quando a assessoria atual não retorna: o corretor preenche o Termo de Desvinculação, assina e nos envia junto com e-mail à plataforma atual. O e-mail substitui a assinatura após 30 dias.",
+     docs:[
+      {t:"Comprovante bancário"},{t:"Contrato social (com o sócio administrador)"},
+      {t:"Cópia de nota fiscal ou foto da tela da Prefeitura"},
+      {t:"RG ou CNH do(s) sócio(s)"},{t:"Comprovante de endereço do sócio (últimos 90 dias)"},
+      {t:"Cartão CNPJ"},
+      {t:"Carta Anticorrupção — assinada e rubricada",dl:"amil_anticorrupcao"},
+      {t:"Termo de Vinculação — apenas preenchido",dl:"amil_vinculacao"},
+      {t:"Formulário cadastral — preenchido nas duas páginas",dl:"amil_formulario"},
+      {t:"Termo de Desvinculação — assinado pela corretora e assessoria atual",dl:"amil_desvinculacao"},
+      {t:"Código atual na Amil"},
+      {t:"E-mail enviado à assessoria atual (substitui assinatura após 30 dias)"}
+    ]}
+  ]},
+  assim_saude:{nome:"Assim Saúde",form:"assim",cats:[
+    {id:"ass_n",titulo:"Abertura de código",ico:"ti-user-plus",obrig:true,
+     info:"Assinatura via DocuSign — preencha os dados abaixo.",warn:null,
+     docs:[
+      {t:"Contrato social e última alteração (mesmo endereço do CNPJ e alvará)"},
+      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais"},
+      {t:"Cartão do CNPJ (mesmo endereço do contrato social e alvará)"},
+      {t:"Cartão SUSEP"},{t:"Cheque ou cartão do banco"},
+      {t:"Comprovante de residência dos sócios"},
+      {t:"Alvará (mesmo endereço do contrato social e CNPJ)"},
+      {t:"Ficha cadastral preenchida",dl:"assim_ficha"},
+      {t:"Termo de comissão preenchido (assinatura digital posterior)",dl:"assim_contrato"}
+    ]}
+  ]},
+  hapvida:{nome:"Hapvida",form:null,cats:[
+    {id:"hap_n",titulo:"Abertura de código",ico:"ti-user-plus",obrig:true,
+     info:"Canal: Varejo — PF, Super Simples e PME. Filial: SP/RJ. Necessário De Acordo do Diretor Regional ou Nacional.",warn:null,
+     docs:[
+      {t:"Cópia do contrato social e última alteração"},
+      {t:"Cartão do CNPJ — CNAE 66.22-3-00"},
+      {t:"Comprovante bancário atualizado — não é permitido conta PF"},
+      {t:"RG e CPF ou CNH e comprovante residencial dos sócios"},
+      {t:"Carta de confirmação de dados bancários (modelo Hapvida)",dl:"hapvida_confirmacao"},
+      {t:"Fator tributário — Simples Nacional: PGDAS mais atual"},
+      {t:"Telefone da corretora"},{t:"E-mail para informações financeiras"},
+      {t:"Nome e e-mail do representante da corretora"},
+      {t:"Nome e e-mail da testemunha"},
+      {t:"Carta de agenciamento e comissão — assinada e carimbada",dl:"hapvida_agenciamento"},
+      {t:"Checklist de criação de códigos — preenchido",dl:"hapvida_checklist"}
+    ]},
+    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:false,info:null,warn:null,
+     docs:[
+      {t:"Cópia do contrato social"},{t:"Cartão do CNPJ"},
+      {t:"RG e CPF ou CNH dos sócios"},{t:"Comprovante de endereço"},
+      {t:"Comprovante bancário"},
+      {t:"Carta de agenciamento e comissão",dl:"hapvida_agenciamento"},
+      {t:"Código atual na Hapvida"},
+      {t:"Termo de desvinculação da assessoria anterior (quando aplicável)"}
+    ]}
+  ]},
+  leve_saude:{nome:"Leve Saúde",form:"leve",cats:[
+    {id:"lev_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
+     info:"Formulário com comissão — Opção 1 de particionamento.",warn:null,
+     docs:[
+      {t:"Contrato social e identificação dos sócios"},
+      {t:"Comprovante de inscrição no CNPJ"},
+      {t:"Documentos de identificação dos sócios"},
+      {t:"Cópia da folha de cheque com dados bancários"},
+      {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"}
+    ]}
+  ]},
+  "medsênior":{nome:"MedSênior",form:"medsênior",cats:[
+    {id:"med_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
+     info:"CNAE: 6622-3/00 — Corretores e agentes de planos de saúde.",warn:null,
+     docs:[
+      {t:"Cartão do CNPJ (CNAE 6622-3/00)"},
+      {t:"Conta bancária para depósito de comissões"},
+      {t:"Cópia do contrato social atualizado e assinado"},
+      {t:"Checklist de abertura MedSênior",dl:"med_checklist"}
+    ]}
+  ]},
+  seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[]},
+  select:{nome:"Select",form:"select",cats:[
+    {id:"sel_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,info:null,warn:null,
+     docs:[
+      {t:"Contrato da nova assessoria com a Select assinado"},
+      {t:"Contrato social e última alteração"},{t:"Cartão do CNPJ"},
+      {t:"Cópia dos dados bancários (não será aceito dados por escrito)"},
+      {t:"Cópia da SUSEP"},{t:"Alíquota de ISS para retenção"},
+      {t:"Comprovante de endereço conforme contrato social"},
+      {t:"Forma de tributação"}
+    ]}
+  ]}
+};
+
+var checked={},arquivos={},filtroDoc="",opcaoSel=1;
+
+// ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
+document.querySelectorAll(".nav-tab").forEach(function(tab){
+  tab.addEventListener("click",function(){
+    document.querySelectorAll(".nav-tab").forEach(function(t){t.classList.remove("active");});
+    document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+    tab.classList.add("active");
+    document.getElementById("tab-"+tab.dataset.tab).classList.add("active");
+  });
+});
+document.getElementById("doc-chips").addEventListener("click",function(e){
+  var c=e.target.closest(".chip");if(!c)return;
+  filtroDoc=c.dataset.op||"";
+  document.querySelectorAll("#doc-chips .chip").forEach(function(x){x.classList.remove("active");});
+  c.classList.add("active");renderDocs();
+});
+document.getElementById("btn-send").addEventListener("click",abrirModal);
+document.getElementById("btn-cancel").addEventListener("click",fecharModal);
+document.getElementById("btn-confirm").addEventListener("click",confirmarEnvio);
+document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)fecharModal();});
+
+// ─── EVENT DELEGATION ─────────────────────────────────────────────────────────
+document.addEventListener("click",function(e){
+  var chk=e.target.closest("[data-chk]");
+  if(chk){var id=chk.dataset.chk;checked[id]=!checked[id];chk.classList.toggle("on",checked[id]);atualizarProg();return;}
+  var rm=e.target.closest("[data-rm]");
+  if(rm){var p=rm.dataset.rm.split("|");if(arquivos[p[0]])arquivos[p[0]].splice(parseInt(p[1]),1);renderBadges(p[0]);return;}
+  var add=e.target.closest("[data-add]");
+  if(add){var p2=add.dataset.add.split("|");var n=prompt("Nome do documento:");if(!n)return;dados[p2[1]].cats.find(function(c){return c.id===p2[0];}).docs.push({t:n});renderDocs();return;}
+  var opsel=e.target.closest("[data-opsel]");
+  if(opsel){opcaoSel=parseInt(opsel.dataset.opsel);document.querySelectorAll("[data-opsel]").forEach(function(b){b.classList.toggle("sel",parseInt(b.dataset.opsel)===opcaoSel);});renderTabPart();return;}
+  var clr=e.target.closest("[data-clear]");
+  if(clr&&window["limpar_"+clr.dataset.clear])window["limpar_"+clr.dataset.clear]();
+  var cpy=e.target.closest("[data-copy]");
+  if(cpy&&window["copiar_"+cpy.dataset.copy])window["copiar_"+cpy.dataset.copy]();
+});
+document.addEventListener("change",function(e){
+  var inp=e.target.closest("[data-upload]");
+  if(!inp||!inp.files.length)return;
+  var id=inp.dataset.upload;
+  if(!arquivos[id])arquivos[id]=[];
+  Array.prototype.forEach.call(inp.files,function(f){arquivos[id].push(f);});
+  renderBadges(id);inp.value="";
+});
+
+function renderBadges(id){
+  var c=document.getElementById("bdg_"+id);if(!c)return;
+  c.innerHTML=(arquivos[id]||[]).map(function(f,i){
+    return "<span class=\"f-badge\"><i class=\"ti ti-paperclip\" style=\"font-size:11px\"></i><span>"+f.name+"</span><span class=\"f-rm\" data-rm=\""+id+"|"+i+"\">✕</span></span> ";
+  }).join("");
+}
+
+function mkDl(key,key2){
+  var f=FILES[key];if(!f)return "";
+  var ic={"dl-pdf":"ti-file-type-pdf","dl-word":"ti-file-type-doc","dl-excel":"ti-file-type-xls"};
+  var h="<a class=\"dl-btn "+f.cls+"\" href=\""+f.url+"\" download target=\"_blank\"><i class=\"ti "+ic[f.cls]+"\"></i>"+f.label+"</a>";
+  if(key2&&FILES[key2]){var f2=FILES[key2];h+=" <a class=\"dl-btn "+f2.cls+"\" href=\""+f2.url+"\" download target=\"_blank\"><i class=\"ti "+ic[f2.cls]+"\"></i>"+f2.label+"</a>";}
+  return h;
+}
+
+// ─── RENDER DOCS ──────────────────────────────────────────────────────────────
+function renderDocs(){
+  var cont=document.getElementById("doc-content");
+  var footer=document.getElementById("doc-footer");
+  if(!filtroDoc){
+    cont.innerHTML="<div class=\"empty-state\"><i class=\"ti ti-hand-click\"></i><p>Selecione uma operadora para ver os documentos necessários</p></div>";
+    footer.style.display="none";return;
+  }
+  var d=dados[filtroDoc];
+  footer.style.display="block";
+  if(d.form==="unimed"){cont.innerHTML=renderUnimed();atualizarProg();return;}
+  var h="<div class=\"op-label\"><span class=\"op-badge-pill\">"+d.nome+"</span><span class=\"op-title\">Documentos necessários</span></div>";
+  h+="<div class=\"doc-grid\">";
+  d.cats.forEach(function(cat){
+    h+="<div class=\"cat-card\">";
+    h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
+    if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
+    if(cat.warn)h+="<div class=\"warn-box\"><i class=\"ti ti-alert-triangle\"></i><span>"+cat.warn+"</span></div>";
+    h+="<ul class=\"doc-list\">";
+    cat.docs.forEach(function(doc,i){
+      var id=cat.id+"_"+i;
+      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+      h+="<li class=\"doc-item\">";
+      h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
+      h+="<div class=\"doc-chk "+(checked[id]?"on":"")+"\" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
+      h+=dlH;
+      h+="<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+      h+="</li>";
+    });
+    h+="</ul>";
+    h+="<button class=\"add-doc-btn\" data-add=\""+cat.id+"|"+filtroDoc+"\"><i class=\"ti ti-plus\"></i>Adicionar documento</button>";
+    h+="</div>";
+  });
+  h+="</div>";
+  h+=renderForm(d.form);
+  cont.innerHTML=h;
+  if(d.form==="leve")renderTabPart();
+  atualizarProg();
+}
+
+function renderForm(f){
+  if(f==="amil")return renderFormAmil();
+  if(f==="assim")return renderFormAssim();
+  if(f==="leve")return renderFormLeve();
+  if(f==="medsênior")return renderFormMed();
+  if(f==="select")return renderFormSelect();
+  return "";
+}
+
+function atualizarProg(){
+  if(!filtroDoc)return;
+  var d=dados[filtroDoc];
+  if(d.form==="unimed"){document.getElementById("prog-txt").textContent="Passo a passo";document.getElementById("prog-bar").style.width="100%";return;}
+  var total=0,m=0;
+  d.cats.forEach(function(cat){cat.docs.forEach(function(_,i){total++;if(checked[cat.id+"_"+i])m++;});});
+  var pct=total?Math.round((m/total)*100):0;
+  document.getElementById("prog-txt").textContent=m+" de "+total+" confirmados";
+  document.getElementById("prog-bar").style.width=pct+"%";
+}
+
+// ─── VALIDAÇÃO CORRETOR ───────────────────────────────────────────────────────
+function getCorretor(){
+  return {
+    sis:   document.getElementById("cor_sis").value.trim(),
+    nome:  document.getElementById("cor_nome").value.trim(),
+    tel:   document.getElementById("cor_tel").value.trim(),
+    email: document.getElementById("cor_email").value.trim()
+  };
+}
+function validarCorretor(){
+  var c=getCorretor();
+  var ok=true;
+  ["cor_sis","cor_nome","cor_tel","cor_email"].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el.value.trim()){el.classList.add("error");ok=false;}
+    else el.classList.remove("error");
+  });
+  if(!ok) alert("Preencha todos os dados do corretor antes de enviar.");
+  return ok;
+}
+
+// ─── MODAL / ENVIO ────────────────────────────────────────────────────────────
+function abrirModal(){
+  if(!filtroDoc){alert("Selecione uma operadora.");return;}
+  if(!validarCorretor())return;
+  var cor=getCorretor();
+  var d=dados[filtroDoc];
+  var linhas=["<b>Corretor:</b> "+cor.nome+" | Sis: "+cor.sis,"<b>Telefone:</b> "+cor.tel+" | <b>E-mail:</b> "+cor.email,"<b>Operadora:</b> "+d.nome,""];
+  if(d.form==="unimed"){
+    linhas.push("Passo a passo Seguros Unimed");
+  } else {
+    d.cats.forEach(function(cat){
+      var m=cat.docs.filter(function(_,i){return checked[cat.id+"_"+i];}).length;
+      var arq=cat.docs.reduce(function(a,_,i){return a+((arquivos[cat.id+"_"+i]||[]).length);},0);
+      linhas.push("<b>"+cat.titulo+":</b> "+m+"/"+cat.docs.length+" confirmados"+(arq>0?" · <span style=\"color:var(--gold)\">"+arq+" arquivo(s)</span>":""));
+    });
+  }
+  document.getElementById("modal-preview").innerHTML=linhas.join("<br>");
+  document.getElementById("modal").classList.add("open");
+}
+function fecharModal(){document.getElementById("modal").classList.remove("open");}
+
+function confirmarEnvio(){
+  var cor=getCorretor();
+  var d=dados[filtroDoc];
+  var obs=document.getElementById("e-obs").value.trim();
+
+  // Montar checklist
+  var checklist="";
+  if(d.form==="unimed"){
+    checklist="SEGUROS UNIMED — Passo a passo:\n1. www.segurosunimed.com.br → Seja um corretor\n2. Preencha e anexe documentos\n3. Vinculado a Assessoria: NÃO\n4. Até 10 dias úteis\n5. Código por e-mail\n6. assessoria@affinitycorretora.com.br";
+  } else {
+    d.cats.forEach(function(cat){
+      checklist+=cat.titulo.toUpperCase()+":\n";
+      cat.docs.forEach(function(doc,i){
+        var id=cat.id+"_"+i;
+        checklist+=(checked[id]?"✓":"○")+" "+doc.t+"\n";
+      });
+      checklist+="\n";
+    });
+  }
+  if(obs) checklist+="\nObservações: "+obs;
+
+  var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+
+  // Parâmetros comuns
+  var params_assessoria={
+    corretor_nome:  cor.nome,
+    corretor_sis:   cor.sis,
+    corretor_tel:   cor.tel,
+    corretor_email: cor.email,
+    operadora:      d.nome,
+    checklist:      checklist,
+    data_envio:     data_envio,
+    observacoes:    obs||"Nenhuma"
+  };
+  var params_corretor={
+    corretor_nome:  cor.nome,
+    corretor_sis:   cor.sis,
+    operadora:      d.nome,
+    checklist:      checklist,
+    data_envio:     data_envio,
+    to_email:       cor.email
+  };
+
+  // Mostrar overlay
+  fecharModal();
+  document.getElementById("btn-confirm").disabled=true;
+  document.getElementById("btn-send").disabled=true;
+  var overlay=document.getElementById("sending-overlay");
+  var spinner=document.getElementById("sending-spinner");
+  var successIcon=document.getElementById("success-icon");
+  var sendingText=document.getElementById("sending-text");
+  overlay.classList.add("open");
+  sendingText.textContent="Enviando...";
+  spinner.style.display="block";
+  successIcon.style.display="none";
+
+  // Enviar para assessoria
+  emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_ASSESSORIA, params_assessoria)
+    .then(function(){
+      // Enviar cópia para corretor
+      return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CORRETOR, params_corretor);
+    })
+    .then(function(){
+      spinner.style.display="none";
+      successIcon.style.display="block";
+      sendingText.textContent="Processo enviado com sucesso!";
+      setTimeout(function(){
+        overlay.classList.remove("open");
+        document.getElementById("btn-send").disabled=false;
+        document.getElementById("btn-confirm").disabled=false;
+        // Limpar checklist
+        checked={};arquivos={};
+        renderDocs();
+        // Limpar obs
+        document.getElementById("e-obs").value="";
+        alert("✅ Processo enviado!\n\nA assessoria foi notificada e você receberá uma cópia no e-mail "+cor.email);
+      },2000);
+    })
+    .catch(function(err){
+      overlay.classList.remove("open");
+      document.getElementById("btn-send").disabled=false;
+      document.getElementById("btn-confirm").disabled=false;
+      alert("Erro ao enviar. Verifique sua conexão e tente novamente.\n\n"+JSON.stringify(err));
+    });
+}
+
+// ─── SEGUROS UNIMED ───────────────────────────────────────────────────────────
+function renderUnimed(){
+  var steps=[
+    {n:1,t:"Acesse o site da Seguros Unimed",d:"Clique em 'Seja um corretor'.",tag:"tag-c",tagT:"Ação do corretor",link:"https://www.segurosunimed.com.br/"},
+    {n:2,t:"Preencha o questionário e anexe os documentos",d:"Complete todos os campos obrigatórios.",tag:"tag-c",tagT:"Ação do corretor"},
+    {n:3,t:"Campo 'Vinculado a Assessoria e Plataforma'",d:"Selecione sempre NÃO.",tag:"tag-a",tagT:"Atenção obrigatória"},
+    {n:4,t:"Acompanhe pendências pelo site",d:"Prazo: até 10 dias úteis.",tag:"tag-p",tagT:"Até 10 dias úteis"},
+    {n:5,t:"Receba o código por e-mail",d:"Após aprovação, código enviado ao corretor.",tag:"tag-c",tagT:"Código ao corretor"},
+    {n:6,t:"Envie o código para a Affinity",d:"assessoria@affinitycorretora.com.br",tag:"tag-a",tagT:"Etapa obrigatória"}
+  ];
+  var h="<div class=\"op-label\"><span class=\"op-badge-pill\">Seguros Unimed</span><span class=\"op-title\">Passo a passo</span></div>";
+  h+="<div class=\"steps-card\"><div class=\"steps-head\"><i class=\"ti ti-list-check\"></i>Fluxo de cadastro</div>";
+  steps.forEach(function(s){h+="<div class=\"step-item\"><div class=\"step-num\">"+s.n+"</div><div class=\"step-body\"><div class=\"step-title\">"+s.t+"</div><div class=\"step-desc\">"+s.d+"</div><span class=\"step-tag "+s.tag+"\">"+s.tagT+"</span>"+(s.link?"<br><a class=\"btn-site\" href=\""+s.link+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar site</a>":"")+"</div></div>";});
+  h+="</div><div class=\"com-card\"><div class=\"com-head\"><i class=\"ti ti-speakerphone\"></i>Comunicado interno</div>";
+  h+="<div class=\"ai ai-gold\"><i class=\"ti ti-chart-bar\"></i><div><div style=\"font-size:11px;font-weight:700;color:var(--gold-dark)\">Comissão</div><div class=\"cv\">300% <span>agenciamento</span> + 2% <span>vitalício</span></div></div></div>";
+  h+="<div class=\"ai ai-red\"><i class=\"ti ti-alert-triangle\"></i><div><strong>\"Vinculado a Assessoria e Plataforma\"</strong> → sempre <strong>NÃO</strong>.</div></div>";
+  h+="<div class=\"ai ai-pur\"><i class=\"ti ti-mail\"></i><div>Código para: <strong>assessoria@affinitycorretora.com.br</strong></div></div>";
+  h+="<div class=\"ai ai-pur\"><i class=\"ti ti-clock\"></i><div>Prazo: <strong>até 10 dias úteis</strong></div></div></div>";
+  return h;
+}
+
+// ─── FORMULÁRIOS ──────────────────────────────────────────────────────────────
+function ffIn(id,label,ph,type){type=type||"text";return "<div class=\"ff\"><label>"+label+"</label><input type=\""+type+"\" id=\""+id+"\" placeholder=\""+ph+"\"></div>";}
+
+function renderFormAmil(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados para Amil</div>";
+  h+="<div class=\"fgt\">Corretora</div>"+ffIn("am_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+"</div>";
+  h+="<div class=\"fgt\">Responsável / Sócio administrador</div>"+ffIn("am_resp_nome","Nome completo","");
+  h+="<div class=\"fg2\">"+ffIn("am_resp_cpf","CPF","000.000.000-00")+ffIn("am_resp_rg","RG","")+"</div>";
+  h+=ffIn("am_resp_email","E-mail nominal","","email")+ffIn("am_resp_tel","Telefone","(00) 00000-0000");
+  h+="<div class=\"fgt\">Testemunha</div>"+ffIn("am_test_nome","Nome completo","");
+  h+="<div class=\"fg2\">"+ffIn("am_test_cpf","CPF","000.000.000-00")+ffIn("am_test_email","E-mail","","email")+"</div>";
+  h+="<div class=\"fgt\">Carta Anticorrupção</div><div class=\"fg2\">"+ffIn("am_local","Local","São Paulo / SP")+ffIn("am_data","Data","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"amil\">Limpar</button><button class=\"btn-copy\" data-copy=\"amil\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-amil\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.copiar_amil=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-amil");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormAssim(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Ficha cadastral — Assim Saúde</div>";
+  h+="<div class=\"fgt\">Dados da corretora</div>"+ffIn("as_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("as_cnpj","CNPJ","")+ffIn("as_tel","Telefone","")+"</div>";
+  h+="<div class=\"fgt\">Representante legal (DocuSign)</div>"+ffIn("as_rl_nome","Nome","")+ffIn("as_rl_email","E-mail","","email");
+  h+="<div class=\"fgt\">Testemunha (DocuSign)</div>"+ffIn("as_test_nome","Nome","")+ffIn("as_test_email","E-mail","","email");
+  h+="<div class=\"fgt\">Acesso à plataforma</div>"+ffIn("as_site_nome","Nome — site Assim","")+ffIn("as_site_email","E-mail","","email")+ffIn("as_plat_nome","Nome — plataforma online","")+ffIn("as_plat_email","E-mail","","email");
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"assim\">Limpar</button><button class=\"btn-copy\" data-copy=\"assim\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-assim\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_assim=function(){["as_razao","as_cnpj","as_tel","as_rl_nome","as_rl_email","as_test_nome","as_test_email","as_site_nome","as_site_email","as_plat_nome","as_plat_email"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.copiar_assim=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="FICHA — ASSIM SAÚDE\nRazão: "+v("as_razao")+" CNPJ: "+v("as_cnpj")+"\nRepresentante: "+v("as_rl_nome")+" | "+v("as_rl_email")+"\nTestemunha: "+v("as_test_nome")+" | "+v("as_test_email")+"\nLogin Assim: "+v("as_site_nome")+" | "+v("as_site_email")+"\nLogin Plataforma: "+v("as_plat_nome")+" | "+v("as_plat_email");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-assim");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormLeve(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Formulário de Particionamento — Leve Saúde</div>";
+  h+="<div class=\"fgt\">Opção</div><div class=\"opcao-row\"><button class=\"opcao-btn sel\" data-opsel=\"1\">Opção 1 (recomendada)</button><button class=\"opcao-btn\" data-opsel=\"2\">Opção 2</button></div>";
+  h+="<div id=\"tabela-part\"></div>";
+  h+="<div class=\"fgt\">Corretora</div>"+ffIn("cor_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("cor_cnpj","CNPJ","")+ffIn("cor_banco","Banco","")+ffIn("cor_ag","Agência","0000")+ffIn("cor_cc","Conta corrente","")+"</div>";
+  h+="<div class=\"fgt\">Repasse (Affinity)</div>"+ffIn("rep_razao","Razão social","F8 Corretora de Seg de Vida e Benefícios Ltda EPP");
+  h+="<div class=\"fg2\">"+ffIn("rep_cnpj","CNPJ","21.127.795/0001-73")+ffIn("form_cidade","Cidade","Rio de Janeiro")+ffIn("form_data","Data","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"leve\">Limpar</button><button class=\"btn-copy\" data-copy=\"leve\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-leve\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+function renderTabPart(){
+  var op=opcaoSel;
+  function mkT(rows){var t="<table class=\"cmt\"><thead><tr><th class=\"left\" style=\"width:55%\">Parcela</th><th>% Corretora</th><th>% Repasse</th></tr></thead><tbody>";rows.forEach(function(r){t+="<tr><td class=\"left\">"+r[0]+"</td><td class=\"hi\">"+r[1]+"</td><td class=\"hi\">"+r[2]+"</td></tr>";});return t+"</tbody></table>";}
+  var pf=[["100% da 1ª","–","100%"],["50% da 2ª","–","50%"],["3% a partir da 3ª",op===1?"1%":"–",op===1?"2%":"3%"]];
+  var pme=[["100% da 1ª","–","100%"],["50% da 2ª","–","50%"],["25% da 3ª","–","25%"],["25% da 4ª","–","25%"],["3% a partir da 5ª",op===1?"1%":"–",op===1?"2%":"3%"]];
+  var el=document.getElementById("tabela-part");
+  if(el)el.innerHTML="<p style=\"font-size:11px;font-weight:700;color:var(--purple);margin-bottom:4px\">Individual/Familiar</p>"+mkT(pf)+"<p style=\"font-size:11px;font-weight:700;color:var(--purple);margin:8px 0 4px\">Empresarial</p>"+mkT(pme);
+}
+window.limpar_leve=function(){["cor_razao","cor_cnpj","cor_banco","cor_ag","cor_cc","form_cidade","form_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.copiar_leve=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="PARTICIONAMENTO (Opção "+opcaoSel+") — LEVE SAÚDE\nCorretora: "+v("cor_razao")+" CNPJ: "+v("cor_cnpj")+"\nBanco: "+v("cor_banco")+" Ag: "+v("cor_ag")+" CC: "+v("cor_cc")+"\nLocal: "+v("form_cidade")+" Data: "+v("form_data");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-leve");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormMed(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados — MedSênior</div>";
+  h+="<div class=\"fgt\">Representante legal</div>"+ffIn("rl_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("rl_email","E-mail","","email")+ffIn("rl_cpf","CPF","")+ffIn("rl_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Testemunha</div>"+ffIn("test_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("test_email","E-mail","","email")+ffIn("test_cpf","CPF","")+ffIn("test_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Resp. comissão / NF</div>"+ffIn("nf_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("nf_email","E-mail","","email")+ffIn("nf_cpf","CPF","")+ffIn("nf_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Contato</div>"+ffIn("tel_fixo","Telefone fixo","(00) 0000-0000");
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"med\">Limpar</button><button class=\"btn-copy\" data-copy=\"med\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-med\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_med=function(){["rl_nome","rl_email","rl_cpf","rl_nasc","test_nome","test_email","test_cpf","test_nasc","nf_nome","nf_email","nf_cpf","nf_nasc","tel_fixo"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.copiar_med=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS MEDSÊNIOR\nRepresentante: "+v("rl_nome")+" "+v("rl_email")+" CPF: "+v("rl_cpf")+" Nasc: "+v("rl_nasc")+"\nTestemunha: "+v("test_nome")+" "+v("test_email")+" CPF: "+v("test_cpf")+" Nasc: "+v("test_nasc")+"\nResp. NF: "+v("nf_nome")+" "+v("nf_email")+" CPF: "+v("nf_cpf")+" Nasc: "+v("nf_nasc")+"\nTel: "+v("tel_fixo");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-med");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormSelect(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados obrigatórios — Select</div>";
+  h+="<div class=\"fgt\">Responsável pela comissão</div>"+ffIn("sel_nome","Nome do responsável","Nome completo");
+  h+="<div class=\"fg2\">"+ffIn("sel_cpf","CPF","000.000.000-00")+ffIn("sel_tel","Telefone","(00) 00000-0000")+"</div>";
+  h+=ffIn("sel_email","E-mail para envio de dados da comissão","","email");
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"select\">Limpar</button><button class=\"btn-copy\" data-copy=\"select\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-select\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_select=function(){["sel_nome","sel_cpf","sel_tel","sel_email"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.copiar_select=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS SELECT\nNome: "+v("sel_nome")+"\nCPF: "+v("sel_cpf")+"\nTelefone: "+v("sel_tel")+"\nE-mail: "+v("sel_email");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-select");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+renderComm();
+</script>
+</body>
+</html>
