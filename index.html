@@ -330,6 +330,36 @@ body{background:#f4f4f6;min-height:100vh}
 </div>
 
 <script>
+// ─── CONFIG CLOUDINARY ───────────────────────────────────────────────────────
+var CLOUDINARY_CLOUD    = "dlic6x4bt";
+var CLOUDINARY_PRESET   = "affinity_portal";
+
+async function uploadArquivosCloudinary(){
+  var links = [];
+  var ids = Object.keys(arquivos);
+  for(var i=0;i<ids.length;i++){
+    var id = ids[i];
+    var files = arquivos[id]||[];
+    for(var j=0;j<files.length;j++){
+      var f = files[j];
+      var fd = new FormData();
+      fd.append("file", f);
+      fd.append("upload_preset", CLOUDINARY_PRESET);
+      fd.append("resource_type", "auto");
+      try{
+        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/auto/upload",{method:"POST",body:fd});
+        var data = await r.json();
+        if(data.secure_url){
+          links.push(f.name+" → "+data.secure_url);
+        }
+      }catch(err){
+        links.push(f.name+" → (erro no upload)");
+      }
+    }
+  }
+  return links.join("\n");
+}
+
 // ─── CONFIG EMAILJS ──────────────────────────────────────────────────────────
 var EMAILJS_PUBLIC_KEY  = "W7viIcFvtgkis4vqK";
 var EMAILJS_SERVICE_ID  = "service_gvedztq";
@@ -718,9 +748,17 @@ function confirmarEnvio(){
   var successIcon=document.getElementById("success-icon");
   var sendingText=document.getElementById("sending-text");
   overlay.classList.add("open");
-  sendingText.textContent="Enviando...";
+  sendingText.textContent="Enviando arquivos...";
   spinner.style.display="block";
   successIcon.style.display="none";
+
+  // Upload arquivos para Cloudinary
+  uploadArquivosCloudinary().then(function(linksArquivos){
+    if(linksArquivos){
+      params_assessoria.checklist += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      params_corretor.checklist   += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+    }
+    sendingText.textContent="Enviando e-mail...";
 
   // Enviar para assessoria
   console.log("Enviando para template:", TEMPLATE_ASSESSORIA, "service:", EMAILJS_SERVICE_ID);
@@ -752,6 +790,7 @@ function confirmarEnvio(){
       document.getElementById("btn-confirm").disabled=false;
       alert("Erro ao enviar. Verifique sua conexão e tente novamente.\n\n"+JSON.stringify(err));
     });
+  }); // fim uploadArquivosCloudinary
 }
 
 // ─── SEGUROS UNIMED ───────────────────────────────────────────────────────────
