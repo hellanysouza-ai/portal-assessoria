@@ -34,7 +34,7 @@ body{background:#f4f4f6;min-height:100vh}
 .comm-card-header{background:var(--purple);padding:10px 16px;display:flex;align-items:center;gap:8px}
 .comm-card-header span{font-size:13px;font-weight:700;color:#fff}
 .comm-card-header .sub{font-size:11px;color:rgba(255,255,255,.6);margin-left:4px}
-.comm-table{width:100%;border-collapse:collapse;font-size:12px}
+.comm-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
 .comm-table th{background:var(--purple);color:rgba(255,255,255,.85);padding:8px 10px;text-align:center;font-size:11px;font-weight:700;border-bottom:2px solid var(--gold)}
 .comm-table th.left{text-align:left;padding-left:14px}
 .comm-table td{padding:9px 10px;border-bottom:.5px solid #eee;text-align:center;font-size:12px;color:#111}
@@ -193,8 +193,7 @@ body{background:#f4f4f6;min-height:100vh}
   .comm-card-header .sub{display:none}
   .comm-table{font-size:11px}
   .comm-table th,.comm-table td{padding:6px 5px}
-  .comm-table th:nth-child(6),.comm-table td:nth-child(6),
-  .comm-table th:nth-child(7),.comm-table td:nth-child(7){display:none}
+  
   .corretor-grid{grid-template-columns:1fr}
   .doc-grid{grid-template-columns:1fr}
   .footer-doc{flex-direction:column;gap:8px}
@@ -252,14 +251,16 @@ body{background:#f4f4f6;min-height:100vh}
       <span>Agenciamento + Vitalício — Affinity Corretora</span>
       <span class="sub">Multinotas</span>
     </div>
-    <table class="comm-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -1px"><table class="comm-table">
       <thead><tr>
         <th class="left">Operadora</th><th>Produto</th><th>Total</th>
         <th>1ª</th><th>2ª</th><th>3ª</th><th>4ª</th><th>Vitalício</th>
       </tr></thead>
       <tbody id="comm-tbody"></tbody>
-    </table>
-    <div class="comm-note"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente. Select PME: demais parcelas = 10%/mês.</span></div>
+    </table></div>
+    <div class="comm-note" id="comm-note-geral"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente.</span></div>
+    <div class="comm-note" id="comm-note-select" style="display:none"><i class="ti ti-info-circle"></i><span>Select: demais parcelas após agenciamento = 10%/mês até completar 10 meses.</span></div>
+    <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME Médico: a partir da 8ª = 2%. PME Médico 2.1 e PME Odonto: a partir da 4ª = 2%.</span></div>
   </div>
   <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
 </div>
@@ -356,8 +357,13 @@ var FILES = {
 
 // ─── COMISSÕES ────────────────────────────────────────────────────────────────
 var comissoes=[
-  {op:"amil",     nome:"Amil",          prod:"PME",tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
-  {op:"assim",    nome:"Assim Saúde",   prod:"PME",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",  vit:"2% vit."},
+  {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
+  {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"175%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"–"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 19+/Fam.",tot:"200%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF Odonto", tot:"120%",p1:"100%",p2:"10%", p3:"10%", p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME",       tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME Odonto",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
   {op:"hapvida",  nome:"Hapvida",       prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."},
   {op:"leve",     nome:"Leve Saúde",    prod:"PF", tot:"150%",p1:"100%",p2:"50%", p3:"–",   p4:"–",  vit:"2% vit."},
   {op:"leve",     nome:"Leve Saúde",    prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"25%", p4:"25%",vit:"2% vit."},
@@ -365,13 +371,13 @@ var comissoes=[
   {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
   {op:"select",   nome:"Select",        prod:"PF", tot:"200%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%"},
   {op:"select",   nome:"Select",        prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"2% vit."},
-  {op:"select",   nome:"Select",        prod:"Emp",tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2%"},
+  {op:"select",   nome:"Select",        prod:"PJ", tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2% vit."},
   {op:"unimed",   nome:"Seguros Unimed",prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."}
 ];
 var filtroComm="todas";
 function renderComm(){
   var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
-  var pc={"PME":"pill pill-pme","PF":"pill pill-pf","Emp":"pill pill-pj"};
+  var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj"};
   document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
     var vh=r.vit==="–"?"<span class=\"dash\">–</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
     var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
@@ -383,6 +389,10 @@ document.getElementById("comm-chips").addEventListener("click",function(e){
   filtroComm=c.dataset.comm||"todas";
   document.querySelectorAll("#comm-chips .chip").forEach(function(x){x.classList.remove("active");});
   c.classList.add("active");renderComm();
+  var noteSelect=document.getElementById("comm-note-select");
+  if(noteSelect)noteSelect.style.display=(filtroComm==="select"||filtroComm==="todas")?"flex":"none";
+  var noteAssim=document.getElementById("comm-note-assim");
+  if(noteAssim)noteAssim.style.display=(filtroComm==="assim"||filtroComm==="todas")?"flex":"none";
 });
 
 // ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
@@ -403,7 +413,7 @@ var dados={
       {t:"E-mail e telefone nominais dos sócios"},
       {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)"}
     ]},
-    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:false,info:null,
+    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:true,info:null,
      warn:"Quando a assessoria atual não retorna: o corretor preenche o Termo de Desvinculação, assina e nos envia junto com e-mail à plataforma atual. O e-mail substitui a assinatura após 30 dias.",
      docs:[
       {t:"Comprovante bancário"},{t:"Contrato social (com o sócio administrador)"},
@@ -445,7 +455,7 @@ var dados={
       {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
       {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
     ]},
-    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:false,info:null,warn:null,
+    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:true,info:null,warn:null,
      docs:[
       {t:"Cópia do contrato social e última alteração"},
       {t:"Cópia do cartão CNPJ — CNAE 66.22-3-00"},
@@ -713,6 +723,7 @@ function confirmarEnvio(){
   successIcon.style.display="none";
 
   // Enviar para assessoria
+  console.log("Enviando para template:", TEMPLATE_ASSESSORIA, "service:", EMAILJS_SERVICE_ID);
   emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_ASSESSORIA, params_assessoria)
     .then(function(){
       // Enviar cópia para corretor
@@ -731,6 +742,7 @@ function confirmarEnvio(){
         renderDocs();
         // Limpar obs
         document.getElementById("e-obs").value="";
+        var nc=document.getElementById("notas-corretor");if(nc)nc.value="";
         alert("✅ Processo enviado!\n\nA assessoria foi notificada e você receberá uma cópia no e-mail "+cor.email);
       },2000);
     })
