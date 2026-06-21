@@ -92,6 +92,8 @@ body{background:#f4f4f6;min-height:100vh}
 .up-lbl input{display:none}
 .f-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:var(--gold-dark)}
 .f-rm{cursor:pointer;color:var(--gold);margin-left:2px}
+.proc-btn{background:#f0ebf5;border:1.5px solid #d0c0dc;color:var(--purple);border-radius:20px;padding:6px 14px;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s}
+.proc-btn.proc-ativo{background:var(--purple);color:#fff;border-color:var(--purple)}
 .add-doc-btn{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--purple);cursor:pointer;background:none;border:none;font-family:Arial,sans-serif;padding:0}
 .info-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:var(--purple-bg);font-size:11px;color:var(--purple);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
 .info-box i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
@@ -342,12 +344,15 @@ async function uploadArquivosCloudinary(){
     var files = arquivos[id]||[];
     for(var j=0;j<files.length;j++){
       var f = files[j];
+      // Determinar tipo de recurso: imagens como image, resto como raw
+      var ext = f.name.split(".").pop().toLowerCase();
+      var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+      var resourceType = imgExts.indexOf(ext)>=0 ? "image" : "raw";
       var fd = new FormData();
       fd.append("file", f);
       fd.append("upload_preset", CLOUDINARY_PRESET);
-      fd.append("resource_type", "auto");
       try{
-        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/auto/upload",{method:"POST",body:fd});
+        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         var data = await r.json();
         if(data.secure_url){
           links.push(f.name+" → "+data.secure_url);
@@ -533,7 +538,7 @@ var dados={
   ]}
 };
 
-var checked={},arquivos={},filtroDoc="",opcaoSel=1;
+var checked={},arquivos={},filtroDoc="",opcaoSel=1,processoSel="novo";
 
 // ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
 document.querySelectorAll(".nav-tab").forEach(function(tab){
@@ -594,6 +599,8 @@ function mkDl(key,key2){
   return h;
 }
 
+function setProcesso(p){processoSel=p;renderDocs();}
+
 // ─── RENDER DOCS ──────────────────────────────────────────────────────────────
 function renderDocs(){
   var cont=document.getElementById("doc-content");
@@ -606,8 +613,24 @@ function renderDocs(){
   footer.style.display="block";
   if(d.form==="unimed"){cont.innerHTML=renderUnimed();atualizarProg();return;}
   var h="<div class=\"op-label\"><span class=\"op-badge-pill\">"+d.nome+"</span><span class=\"op-title\">Documentos necessários</span></div>";
+
+  // Seletor de processo (Novo Cadastro / Transferência / Ambos) — só quando há mais de 1 categoria
+  var temNovoCad = d.cats.some(function(c){return c.id.indexOf("_n")!==-1;});
+  var temTransf   = d.cats.some(function(c){return c.id.indexOf("_t")!==-1;});
+  if(temNovoCad && temTransf){
+    h+="<div class=\"processo-sel\" style=\"display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap\">";
+    h+="<button class=\"proc-btn"+(processoSel==="novo"?" proc-ativo":"")+"\" onclick=\"setProcesso('novo')\"><i class=\"ti ti-user-plus\"></i> Novo Cadastro</button>";
+    h+="<button class=\"proc-btn"+(processoSel==="transf"?" proc-ativo":"")+"\" onclick=\"setProcesso('transf')\"><i class=\"ti ti-arrows-exchange\"></i> Transferência</button>";
+    h+="</div>";
+  }
+
   h+="<div class=\"doc-grid\">";
   d.cats.forEach(function(cat){
+    // Filtrar categoria conforme processo selecionado
+    var isNovo  = cat.id.indexOf("_n")!==-1;
+    var isTransf= cat.id.indexOf("_t")!==-1;
+    if(processoSel==="novo"   && isTransf && !isNovo) return;
+    if(processoSel==="transf" && isNovo   && !isTransf) return;
     h+="<div class=\"cat-card\">";
     h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
     if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
@@ -707,12 +730,25 @@ function confirmarEnvio(){
     checklist="SEGUROS UNIMED — Passo a passo:\n1. www.segurosunimed.com.br → Seja um corretor\n2. Preencha e anexe documentos\n3. Vinculado a Assessoria: NÃO\n4. Até 10 dias úteis\n5. Código por e-mail\n6. assessoria@affinitycorretora.com.br";
   } else {
     d.cats.forEach(function(cat){
-      checklist+=cat.titulo.toUpperCase()+":\n";
+      // Filtrar categorias conforme processo selecionado
+      var isNovo  = cat.id.indexOf("_n")!==-1;
+      var isTransf= cat.id.indexOf("_t")!==-1;
+      if(processoSel==="novo"   && isTransf && !isNovo) return;
+      if(processoSel==="transf" && isNovo   && !isTransf) return;
+      var docsAnexados = [];
       cat.docs.forEach(function(doc,i){
         var id=cat.id+"_"+i;
-        checklist+=(checked[id]?"✓":"○")+" "+doc.t+"\n";
+        if(arquivos[id]&&arquivos[id].length>0){
+          docsAnexados.push("📎 "+doc.t+" ("+arquivos[id].map(function(f){return f.name;}).join(", ")+")");
+        } else if(checked[id]){
+          docsAnexados.push("✓ "+doc.t);
+        }
       });
-      checklist+="\n";
+      if(docsAnexados.length>0){
+        checklist+=cat.titulo.toUpperCase()+":\n";
+        docsAnexados.forEach(function(l){checklist+=l+"\n";});
+        checklist+="\n";
+      }
     });
   }
   if(obs) checklist+="\nObservações: "+obs;
