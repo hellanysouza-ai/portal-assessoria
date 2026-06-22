@@ -464,15 +464,20 @@ var dados={
     ]}
   ]},
   assim_saude:{nome:"Assim Saúde",form:"assim",cats:[
-    {id:"ass_n",titulo:"Abertura de código",ico:"ti-user-plus",obrig:true,
-     info:"Assinatura via DocuSign — preencha os dados abaixo.",warn:null,
+    {id:"ass_n",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
      docs:[
-      {t:"Contrato social e última alteração (mesmo endereço do CNPJ e alvará)"},
-      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais"},
-      {t:"Cartão do CNPJ (mesmo endereço do contrato social e alvará)"},
-      {t:"Cartão SUSEP"},{t:"Cheque ou cartão do banco"},
+      {t:"Contrato social e última alteração — devidamente registrado (Junta Comercial ou Registro Civil de PJ), com o mesmo endereço do CNPJ e alvará"},
+      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais constantes no contrato/estatuto social para assinatura do contrato"},
+      {t:"Cartão do CNPJ — com o mesmo endereço do contrato social/última alteração e do alvará"},
+      {t:"Cartão SUSEP"},
+      {t:"Cheque ou cartão do banco"},
       {t:"Comprovante de residência dos sócios"},
-      {t:"Alvará (mesmo endereço do contrato social e CNPJ)"},
+      {t:"Alvará — com o mesmo endereço do contrato social/última alteração e do CNPJ"}
+    ]},
+    {id:"ass_n2",titulo:"Ficha cadastral e contrato (DocuSign)",ico:"ti-file-signature",obrig:true,
+     info:"Assinatura realizada via DocuSign — preencha os dados abaixo e anexe os arquivos.",warn:null,
+     docs:[
       {t:"Ficha cadastral preenchida",dl:"assim_ficha"},
       {t:"Termo de comissão preenchido (assinatura digital posterior)",dl:"assim_contrato"}
     ]}
