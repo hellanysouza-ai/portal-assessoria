@@ -262,7 +262,7 @@ body{background:#f4f4f6;min-height:100vh}
     </table></div>
     <div class="comm-note" id="comm-note-geral"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente.</span></div>
     <div class="comm-note" id="comm-note-select" style="display:none"><i class="ti ti-info-circle"></i><span>Select: demais parcelas após agenciamento = 10%/mês até completar 10 meses.</span></div>
-    <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME Médico: a partir da 8ª = 2%. PME Médico 2.1 e PME Odonto: a partir da 4ª = 2%.</span></div>
+    <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME: a partir da 4ª = 2% vitalício. Select PME: 3ª–7ª = 10%, a partir da 8ª = 2% vitalício.</span></div>
   </div>
   <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
 </div>
@@ -394,8 +394,8 @@ var FILES = {
 var comissoes=[
   {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
   {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
-  {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"175%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"–"},
-  {op:"assim",    nome:"Assim Saúde",   prod:"PF 19+/Fam.",tot:"200%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"250%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"5×20%"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 19+/Fam.",tot:"275%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"3×25%"},
   {op:"assim",    nome:"Assim Saúde",   prod:"PF Odonto", tot:"120%",p1:"100%",p2:"10%", p3:"10%", p4:"–",   vit:"2% vit."},
   {op:"assim",    nome:"Assim Saúde",   prod:"PME",       tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
   {op:"assim",    nome:"Assim Saúde",   prod:"PME Odonto",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
@@ -405,7 +405,7 @@ var comissoes=[
   {op:"medsênior",nome:"MedSênior",     prod:"PF", tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"–"},
   {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
   {op:"select",   nome:"Select",        prod:"PF", tot:"200%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%"},
-  {op:"select",   nome:"Select",        prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"2% vit."},
+  {op:"select",   nome:"Select",        prod:"PME",tot:"300%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"5×10%+2% vit."},
   {op:"select",   nome:"Select",        prod:"PJ", tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2% vit."},
   {op:"unimed",   nome:"Seguros Unimed",prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."}
 ];
@@ -582,6 +582,8 @@ document.addEventListener("change",function(e){
   if(!arquivos[id])arquivos[id]=[];
   Array.prototype.forEach.call(inp.files,function(f){arquivos[id].push(f);});
   renderBadges(id);inp.value="";
+  // Auto-tick: marcar o checkbox ao anexar arquivo
+  if(!checked[id]){checked[id]=true;var chkEl=document.getElementById("chk_"+id);if(chkEl){chkEl.classList.add("on");}atualizarProg();}
 });
 
 function renderBadges(id){
@@ -726,8 +728,10 @@ function confirmarEnvio(){
 
   // Montar checklist
   var checklist="";
+  var checklistHtml="";
   if(d.form==="unimed"){
     checklist="SEGUROS UNIMED — Passo a passo:\n1. www.segurosunimed.com.br → Seja um corretor\n2. Preencha e anexe documentos\n3. Vinculado a Assessoria: NÃO\n4. Até 10 dias úteis\n5. Código por e-mail\n6. assessoria@affinitycorretora.com.br";
+    checklistHtml="<p><strong>SEGUROS UNIMED — Passo a passo</strong></p><ol><li>www.segurosunimed.com.br → Seja um corretor</li><li>Preencha e anexe documentos</li><li>Vinculado a Assessoria: <strong>NÃO</strong></li><li>Até 10 dias úteis</li><li>Código por e-mail</li><li>assessoria@affinitycorretora.com.br</li></ol>";
   } else {
     d.cats.forEach(function(cat){
       // Filtrar categorias conforme processo selecionado
@@ -736,22 +740,26 @@ function confirmarEnvio(){
       if(processoSel==="novo"   && isTransf && !isNovo) return;
       if(processoSel==="transf" && isNovo   && !isTransf) return;
       var docsAnexados = [];
+      var docsAnexadosHtml = [];
       cat.docs.forEach(function(doc,i){
         var id=cat.id+"_"+i;
         if(arquivos[id]&&arquivos[id].length>0){
           docsAnexados.push("📎 "+doc.t+" ("+arquivos[id].map(function(f){return f.name;}).join(", ")+")");
+          docsAnexadosHtml.push("<li style='color:#1a7c3e'>📎 <strong>"+doc.t+"</strong> — "+arquivos[id].map(function(f){return f.name;}).join(", ")+"</li>");
         } else if(checked[id]){
           docsAnexados.push("✓ "+doc.t);
+          docsAnexadosHtml.push("<li style='color:#555'>✓ "+doc.t+"</li>");
         }
       });
       if(docsAnexados.length>0){
         checklist+=cat.titulo.toUpperCase()+":\n";
         docsAnexados.forEach(function(l){checklist+=l+"\n";});
         checklist+="\n";
+        checklistHtml+="<p style='margin:12px 0 4px;font-weight:700;color:#4A2050;border-bottom:1px solid #ede0f2;padding-bottom:4px'>"+cat.titulo+"</p><ul style='margin:0;padding-left:18px;line-height:1.7'>"+docsAnexadosHtml.join("")+"</ul>";
       }
     });
   }
-  if(obs) checklist+="\nObservações: "+obs;
+  if(obs){ checklist+="\nObservações: "+obs; checklistHtml+="<p style='margin:14px 0 4px;font-weight:700;color:#4A2050'>Observações</p><p style='background:#fdf3e7;border-radius:6px;padding:8px 12px;color:#555'>"+obs+"</p>"; }
 
   var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
 
@@ -763,6 +771,7 @@ function confirmarEnvio(){
     corretor_email: cor.email,
     operadora:      d.nome,
     checklist:      checklist,
+    checklist_html: checklistHtml,
     data_envio:     data_envio,
     observacoes:    obs||"Nenhuma"
   };
@@ -771,8 +780,10 @@ function confirmarEnvio(){
     corretor_sis:   cor.sis,
     operadora:      d.nome,
     checklist:      checklist,
+    checklist_html: checklistHtml,
     data_envio:     data_envio,
-    to_email:       cor.email
+    to_email:       cor.email,
+    mensagem_status: "Em breve entraremos em contato para informar o andamento do processo."
   };
 
   // Mostrar overlay
@@ -817,7 +828,7 @@ function confirmarEnvio(){
         // Limpar obs
         document.getElementById("e-obs").value="";
         var nc=document.getElementById("notas-corretor");if(nc)nc.value="";
-        alert("✅ Processo enviado!\n\nA assessoria foi notificada e você receberá uma cópia no e-mail "+cor.email);
+        alert("✅ Processo enviado!\n\nEm breve entraremos em contato para informar o andamento do processo.");
       },2000);
     })
     .catch(function(err){
