@@ -509,25 +509,28 @@ var dados={
     ]}
   ]},
   leve_saude:{nome:"Leve Saúde",form:"leve",cats:[
-    {id:"lev_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
-     info:"Formulário com comissão — Opção 1 de particionamento.",warn:null,
+    {id:"lev_n",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
      docs:[
-      {t:"Contrato social e identificação dos sócios"},
-      {t:"Comprovante de inscrição no CNPJ"},
-      {t:"Documentos de identificação dos sócios"},
-      {t:"Cópia da folha de cheque com dados bancários"},
+      {t:"Contrato social com suas alterações e identificação dos sócios"},
+      {t:"Comprovante de inscrição no CNPJ (Cartão do CNPJ)"},
+      {t:"Documentos de identificação dos sócios ou responsáveis legais"},
+      {t:"Cópia da folha de cheque com dados bancários da empresa"}
+    ]},
+    {id:"lev_n2",titulo:"Formulário de particionamento",ico:"ti-forms",obrig:true,
+     info:"Preencha os dados abaixo e anexe o formulário assinado (Opção 1 de particionamento).",warn:null,
+     docs:[
       {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"}
     ]}
   ]},
   "medsênior":{nome:"MedSênior",form:"medsênior",cats:[
-    {id:"med_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
-     info:"CNAE: 6622-3/00 — Corretores e agentes de planos de saúde.",warn:null,
+    {id:"med_n",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:"CNAE obrigatório: 6622-3/00 — Corretores e agentes de seguros, de planos de previdência complementar e de saúde.",warn:null,
      docs:[
-      {t:"Cartão do CNPJ (CNAE 6622-3/00)"},
-      {t:"Conta bancária para depósito de comissões"},
-      {t:"Cópia do contrato social atualizado e assinado"},
-      {t:"Checklist de abertura MedSênior",dl:"med_checklist"}
-    ]}
+      {t:"Cartão do CNPJ — CNAE compatível: 6622-3/00 (Corretores e agentes de seguros, de planos de previdência complementar e de saúde)"},
+      {t:"Conta bancária para depósito de comissões — ex.: cheque da empresa, cartão bancário (frente e verso) ou extrato"},
+      {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"}
+    ]},
   ]},
   seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[]},
   select:{nome:"Select",form:"select",cats:[
