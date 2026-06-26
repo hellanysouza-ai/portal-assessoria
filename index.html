@@ -70,6 +70,9 @@ body{background:#f4f4f6;min-height:100vh}
 .op-title{font-size:15px;font-weight:700;color:var(--purple)}
 .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .cat-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--gold)}
+.extra-section{margin-top:22px}
+.extra-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.extra-section-title::before,.extra-section-title::after{content:'';flex:1;height:1px;background:#e0d5ea}
 .cat-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
 .cat-head i{font-size:15px;color:var(--gold)}
 .tag-obrig{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--gold-bg);color:var(--gold-dark);margin-left:4px;font-weight:700}
@@ -461,6 +464,22 @@ var dados={
       {t:"Termo de Desvinculação — assinado pela corretora e assessoria atual",dl:"amil_desvinculacao"},
       {t:"Código atual na Amil"},
       {t:"E-mail enviado à assessoria atual (substitui assinatura após 30 dias)"}
+    ]},
+    {id:"amil_alt",titulo:"Alteração de comissionamento",ico:"ti-edit",obrig:false,
+     info:"Para realizar alteração de comissionamento na Amil.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — assinado pela corretora e pela plataforma Affinity (apenas para corretoras cadastradas antes de outubro/2018)",dl:"amil_vinculacao"},
+      {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"}
+    ]},
+    {id:"amil_dir",titulo:"Código direto na Amil → Vinculação à plataforma",ico:"ti-link",obrig:false,
+     info:"Quando o corretor possui código Direto na Amil e deseja se vincular à plataforma Affinity.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — apenas preenchido (será enviado para assinatura digital posteriormente)",dl:"amil_vinculacao"},
+      {t:"Contrato Social da Corretora — com o sócio administrador inserido no processo"},
+      {t:"Carta de Expectativa"},
+      {t:"Comprovante Bancário — documento que comprove o nome do Banco, Número da Agência e Conta Corrente com nome ou CNPJ da Corretora"},
+      {t:"Cartão CNPJ — emitido na Receita Federal sobre o CNPJ da Corretora"},
+      {t:"Formulário Cadastral — preenchido nas duas páginas",dl:"amil_formulario"}
     ]}
   ]},
   assim_saude:{nome:"Assim Saúde",form:"assim",cats:[
@@ -634,8 +653,12 @@ function renderDocs(){
     h+="</div>";
   }
 
+  // Separar cats: processo (tem _n ou _t) e extras (não tem nenhum)
+  var catsProc=d.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra=d.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+
   h+="<div class=\"doc-grid\">";
-  d.cats.forEach(function(cat){
+  catsProc.forEach(function(cat){
     // Filtrar categoria conforme processo selecionado
     var isNovo  = cat.id.indexOf("_n")!==-1;
     var isTransf= cat.id.indexOf("_t")!==-1;
@@ -661,6 +684,36 @@ function renderDocs(){
     h+="</div>";
   });
   h+="</div>";
+
+  // Seção extra (Alteração, Código Direto, etc.) — sempre visível, fora do filtro de processo
+  if(catsExtra.length>0){
+    h+="<div class=\"extra-section\">";
+    h+="<div class=\"extra-section-title\">Outros processos</div>";
+    h+="<div class=\"doc-grid\">";
+    catsExtra.forEach(function(cat){
+      var id,dlH;
+      h+="<div class=\"cat-card\">";
+      h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
+      if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
+      if(cat.warn)h+="<div class=\"warn-box\"><i class=\"ti ti-alert-triangle\"></i><span>"+cat.warn+"</span></div>";
+      h+="<ul class=\"doc-list\">";
+      cat.docs.forEach(function(doc,i){
+        id=cat.id+"_"+i;
+        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+        h+="<li class=\"doc-item\">";
+        h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
+        h+="<div class=\"doc-chk "+(checked[id]?"on":"")+" \" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
+        h+=dlH;
+        h+="<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+        h+="</li>";
+      });
+      h+="</ul>";
+      h+="<button class=\"add-doc-btn\" data-add=\""+cat.id+"|"+filtroDoc+"\"><i class=\"ti ti-plus\"></i>Adicionar documento</button>";
+      h+="</div>";
+    });
+    h+="</div></div>";
+  }
+
   h+=renderForm(d.form);
   cont.innerHTML=h;
   if(d.form==="leve")renderTabPart();
