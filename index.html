@@ -337,7 +337,7 @@ body{background:#f4f4f6;min-height:100vh}
 <script>
 // ─── CONFIG CLOUDINARY ───────────────────────────────────────────────────────
 var CLOUDINARY_CLOUD    = "uh6giet4";
-var CLOUDINARY_PRESET   = "affinity_portal";
+var CLOUDINARY_PRESET   = "affinity_portal_pub";
 
 async function uploadArquivosCloudinary(){
   var links = [];
@@ -368,11 +368,14 @@ async function uploadArquivosCloudinary(){
       try{
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         var data = await r.json();
+        console.log("Cloudinary response:", JSON.stringify(data));
         if(data.secure_url){
           links.push(label+" → "+data.secure_url);
+        } else {
+          links.push(label+" → (erro: "+(data.error&&data.error.message||JSON.stringify(data))+")");
         }
       }catch(err){
-        links.push(label+" → (erro no upload)");
+        links.push(label+" → (erro no upload: "+err.message+")");
       }
     }
   }
