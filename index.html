@@ -341,27 +341,38 @@ var CLOUDINARY_PRESET   = "affinity_portal";
 
 async function uploadArquivosCloudinary(){
   var links = [];
+  var d = dados[filtroDoc];
+  // Montar mapa id → nome do documento
+  var nomeDoc = {};
+  if(d && d.cats){
+    d.cats.forEach(function(cat){
+      cat.docs.forEach(function(doc,i){
+        nomeDoc[cat.id+"_"+i] = doc.t;
+      });
+    });
+  }
   var ids = Object.keys(arquivos);
   for(var i=0;i<ids.length;i++){
     var id = ids[i];
     var files = arquivos[id]||[];
+    var label = nomeDoc[id] || id; // nome do documento ou fallback para o id
     for(var j=0;j<files.length;j++){
       var f = files[j];
-      // Determinar tipo de recurso: imagens como image, resto como raw
       var ext = f.name.split(".").pop().toLowerCase();
       var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
       var resourceType = imgExts.indexOf(ext)>=0 ? "image" : "raw";
       var fd = new FormData();
       fd.append("file", f);
       fd.append("upload_preset", CLOUDINARY_PRESET);
+      fd.append("access_mode", "public");
       try{
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         var data = await r.json();
         if(data.secure_url){
-          links.push(f.name+" → "+data.secure_url);
+          links.push(label+" → "+data.secure_url);
         }
       }catch(err){
-        links.push(f.name+" → (erro no upload)");
+        links.push(label+" → (erro no upload)");
       }
     }
   }
