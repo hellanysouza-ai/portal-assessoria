@@ -865,6 +865,25 @@ function confirmarEnvio(){
     if(linksArquivos){
       params_assessoria.checklist += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
       params_corretor.checklist   += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      // Montar HTML com botões clicáveis para cada arquivo
+      var linksHtml = "<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">";
+      linksHtml += "<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📎 Arquivos anexados</p>";
+      linksArquivos.split("\n").forEach(function(linha){
+        if(!linha.trim()) return;
+        var partes = linha.split(" → ");
+        var nome = partes[0] || "";
+        var url  = partes[1] || "";
+        if(url && url !== "(erro no upload)"){
+          linksHtml += "<div style=\"margin-bottom:8px\">";
+          linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
+          linksHtml += "</div>";
+        } else {
+          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload</p>";
+        }
+      });
+      linksHtml += "</div>";
+      params_assessoria.checklist_html += linksHtml;
+      params_corretor.checklist_html   += linksHtml;
     }
     sendingText.textContent="Enviando e-mail...";
 
