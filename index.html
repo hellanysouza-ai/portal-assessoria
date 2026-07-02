@@ -782,6 +782,13 @@ function abrirModal(){
 }
 function fecharModal(){document.getElementById("modal").classList.remove("open");}
 
+function mkFRow(label,val){
+  return "<tr>"
+    +"<td style=\"padding:5px 10px 5px 0;color:#888;font-size:11px;font-weight:700;width:42%;vertical-align:top;border-bottom:1px solid #f5f0f9\">"+label+"</td>"
+    +"<td style=\"padding:5px 0;color:#2D1228;font-size:12px;border-bottom:1px solid #f5f0f9\">"+val+"</td>"
+    +"</tr>";
+}
+
 function confirmarEnvio(){
   var cor=getCorretor();
   var d=dados[filtroDoc];
@@ -821,6 +828,112 @@ function confirmarEnvio(){
     });
   }
   if(obs){ checklist+="\nObservações: "+obs; checklistHtml+="<p style='margin:14px 0 4px;font-weight:700;color:#4A2050'>Observações</p><p style='background:#fdf3e7;border-radius:6px;padding:8px 12px;color:#555'>"+obs+"</p>"; }
+
+  var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+
+  // ─── Coletar dados dos formulários ───────────────────────────────────────
+  var v=function(id){var el=document.getElementById(id);return(el&&el.value.trim())?el.value.trim():"—";};
+  var formHtml="";
+  var formTxt="";
+
+  if(d.form==="amil"){
+    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" | CPF: "+v("am_resp_cpf")+" | RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" | Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados para Amil</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("am_razao"))
+      +mkFRow("CNPJ",v("am_cnpj"))
+      +mkFRow("CCM / Inscrição municipal",v("am_ccm"))
+      +mkFRow("Banco",v("am_banco"))
+      +mkFRow("Agência",v("am_ag"))
+      +mkFRow("Conta corrente",v("am_cc"))
+      +mkFRow("Segmento",v("am_seg"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável / Sócio administrador</td></tr>"
+      +mkFRow("Nome completo",v("am_resp_nome"))
+      +mkFRow("CPF",v("am_resp_cpf"))
+      +mkFRow("RG",v("am_resp_rg"))
+      +mkFRow("E-mail nominal",v("am_resp_email"))
+      +mkFRow("Telefone",v("am_resp_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome completo",v("am_test_nome"))
+      +mkFRow("CPF",v("am_test_cpf"))
+      +mkFRow("E-mail",v("am_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Carta Anticorrupção</td></tr>"
+      +mkFRow("Local",v("am_local"))
+      +mkFRow("Data",v("am_data"))
+      +"</table></div>";
+  } else if(d.form==="assim"){
+    formTxt="FICHA ASSIM SAÚDE\nRazão: "+v("as_razao")+" | CNPJ: "+v("as_cnpj")+" | Tel: "+v("as_tel")+"\nRepresentante: "+v("as_rl_nome")+" | "+v("as_rl_email")+"\nTestemunha: "+v("as_test_nome")+" | "+v("as_test_email")+"\nSite Assim: "+v("as_site_nome")+" | "+v("as_site_email")+"\nPlataforma: "+v("as_plat_nome")+" | "+v("as_plat_email");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Ficha cadastral — Assim Saúde</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("as_razao"))
+      +mkFRow("CNPJ",v("as_cnpj"))
+      +mkFRow("Telefone",v("as_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_rl_nome"))
+      +mkFRow("E-mail",v("as_rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_test_nome"))
+      +mkFRow("E-mail",v("as_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Acesso à plataforma</td></tr>"
+      +mkFRow("Nome — site Assim",v("as_site_nome"))
+      +mkFRow("E-mail — site Assim",v("as_site_email"))
+      +mkFRow("Nome — plataforma online",v("as_plat_nome"))
+      +mkFRow("E-mail — plataforma online",v("as_plat_email"))
+      +"</table></div>";
+  } else if(d.form==="leve"){
+    formTxt="PARTICIONAMENTO LEVE SAÚDE (Opção "+opcaoSel+")\nCorretora: "+v("cor_razao")+" | CNPJ: "+v("cor_cnpj")+"\nBanco: "+v("cor_banco")+" | Agência: "+v("cor_ag")+" | Conta: "+v("cor_cc")+"\nCidade: "+v("form_cidade")+" | Data: "+v("form_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Particionamento — Leve Saúde (Opção "+opcaoSel+")</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("cor_razao"))
+      +mkFRow("CNPJ",v("cor_cnpj"))
+      +mkFRow("Banco",v("cor_banco"))
+      +mkFRow("Agência",v("cor_ag"))
+      +mkFRow("Conta corrente",v("cor_cc"))
+      +mkFRow("Cidade",v("form_cidade"))
+      +mkFRow("Data",v("form_data"))
+      +"</table></div>";
+  } else if(d.form==="medsênior"){
+    formTxt="DADOS MEDSÊNIOR\nRepresentante: "+v("rl_nome")+" | CPF: "+v("rl_cpf")+" | Nasc: "+v("rl_nasc")+" | E-mail: "+v("rl_email")+"\nTestemunha: "+v("test_nome")+" | CPF: "+v("test_cpf")+" | Nasc: "+v("test_nasc")+" | E-mail: "+v("test_email")+"\nResp. NF: "+v("nf_nome")+" | CPF: "+v("nf_cpf")+" | Nasc: "+v("nf_nasc")+" | E-mail: "+v("nf_email")+"\nTelefone: "+v("tel_fixo");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados — MedSênior</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal</td></tr>"
+      +mkFRow("Nome",v("rl_nome"))
+      +mkFRow("CPF",v("rl_cpf"))
+      +mkFRow("Nascimento",v("rl_nasc"))
+      +mkFRow("E-mail",v("rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome",v("test_nome"))
+      +mkFRow("CPF",v("test_cpf"))
+      +mkFRow("Nascimento",v("test_nasc"))
+      +mkFRow("E-mail",v("test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Resp. comissão / NF</td></tr>"
+      +mkFRow("Nome",v("nf_nome"))
+      +mkFRow("CPF",v("nf_cpf"))
+      +mkFRow("Nascimento",v("nf_nasc"))
+      +mkFRow("E-mail",v("nf_email"))
+      +mkFRow("Telefone fixo",v("tel_fixo"))
+      +"</table></div>";
+  } else if(d.form==="select"){
+    formTxt="DADOS SELECT\nNome: "+v("sel_nome")+" | CPF: "+v("sel_cpf")+" | Tel: "+v("sel_tel")+" | E-mail: "+v("sel_email");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados obrigatórios — Select</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável pela comissão</td></tr>"
+      +mkFRow("Nome",v("sel_nome"))
+      +mkFRow("CPF",v("sel_cpf"))
+      +mkFRow("Telefone",v("sel_tel"))
+      +mkFRow("E-mail",v("sel_email"))
+      +"</table></div>";
+  }
+
+  if(formTxt) checklist += "\n\n" + formTxt;
+  if(formHtml) checklistHtml += formHtml;
+
+  // ─── Fim coleta formulários ───────────────────────────────────────────────
 
   var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
 
