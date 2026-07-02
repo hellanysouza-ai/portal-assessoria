@@ -1000,8 +1000,10 @@ function confirmarEnvio(){
         var nome = partes[0] || "";
         var url  = partes[1] || "";
         if(url && url !== "(erro no upload)"){
+          // Adicionar fl_attachment para forçar download direto
+          var dlUrl = url.replace("/upload/", "/upload/fl_attachment/");
           linksHtml += "<div style=\"margin-bottom:8px\">";
-          linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
+          linksHtml += "<a href=\""+dlUrl+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
           linksHtml += "</div>";
         } else {
           linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload</p>";
