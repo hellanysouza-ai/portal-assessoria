@@ -364,7 +364,6 @@ async function uploadArquivosCloudinary(){
       var fd = new FormData();
       fd.append("file", f);
       fd.append("upload_preset", CLOUDINARY_PRESET);
-      fd.append("access_mode", "public");
       try{
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         var data = await r.json();
