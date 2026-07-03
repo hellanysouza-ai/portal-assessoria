@@ -288,6 +288,7 @@ body{background:#f4f4f6;min-height:100vh}
     <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
     <div class="chips" id="doc-chips">
       <div class="chip active" data-op="">Selecione...</div>
+      <div class="chip" data-op="alice" data-soon="1">Alice <span style="font-size:10px;background:#C9A84C;color:#fff;border-radius:4px;padding:1px 5px;margin-left:3px;">Em breve</span></div>
       <div class="chip" data-op="amil">Amil</div>
       <div class="chip" data-op="assim_saude">Assim Saúde</div>
       <div class="chip" data-op="hapvida">Hapvida</div>
@@ -408,6 +409,7 @@ var FILES = {
 
 // ─── COMISSÕES ────────────────────────────────────────────────────────────────
 var comissoes=[
+  {op:"alice", nome:"Alice",prod:"PME",tot:"—",p1:"—",p2:"—",p3:"—",p4:"—",vit:"Em breve"},
   {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
   {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
   {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"250%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"5×20%"},
@@ -430,7 +432,7 @@ function renderComm(){
   var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
   var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj"};
   document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
-    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
+    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":r.vit==="Em breve"?"<span class=\"vit-pill\" style=\"background:#fff3dc;color:#b07800\">Em breve</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
     var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
     return "<tr><td class=\"left\">"+r.nome+"</td><td><span class=\""+pc[r.prod]+"\">"+r.prod+"</span></td><td class=\"total\">"+r.tot+"</td><td>"+mkC(r.p1)+"</td><td>"+mkC(r.p2)+"</td><td>"+mkC(r.p3)+"</td><td>"+mkC(r.p4)+"</td><td>"+vh+"</td></tr>";
   }).join("");
@@ -448,6 +450,7 @@ document.getElementById("comm-chips").addEventListener("click",function(e){
 
 // ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
 var dados={
+  alice:{nome:"Alice",form:null,soon:true,cats:[]},
   amil:{nome:"Amil",form:"amil",cats:[
     {id:"amil_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
      info:"CNAEs aceitos: 66.22.300 / 66.29.100 / 65.50.200. Multinotas somente se o corretor já estiver no Sis.",warn:null,
@@ -523,7 +526,7 @@ var dados={
       {t:"Comprovante bancário atualizado — cópia do cheque, cartão frente e verso, extrato ou contrato com assinatura do gerente (não é permitido conta PF)"},
       {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
       {t:"Carta de confirmação dos dados bancários — conforme modelo, carimbada e assinada",dl:"hapvida_confirmacao"},
-      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
       {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
       {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
     ]},
@@ -534,7 +537,7 @@ var dados={
       {t:"Comprovante bancário atualizado — não é permitido conta PF"},
       {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
       {t:"Carta de confirmação dos dados bancários — carimbada e assinada",dl:"hapvida_confirmacao"},
-      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
       {t:"Código atual na Hapvida (NDI SP)"},
       {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
       {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
@@ -653,6 +656,11 @@ function renderDocs(){
   }
   var d=dados[filtroDoc];
   footer.style.display="block";
+  if(d.soon){
+    cont.innerHTML="<div class=\"empty-state\"><i class=\"ti ti-clock\" style=\"color:#C9A84C\"></i><p style=\"color:#C9A84C;font-weight:700\">Em breve</p><p style=\"font-size:13px;color:#888\">As informações da operadora <strong>"+d.nome+"</strong> estarão disponíveis em breve.</p></div>";
+    footer.style.display="none";
+    return;
+  }
   if(d.form==="unimed"){cont.innerHTML=renderUnimed();atualizarProg();return;}
   var h="<div class=\"op-label\"><span class=\"op-badge-pill\">"+d.nome+"</span><span class=\"op-title\">Documentos necessários</span></div>";
 
@@ -684,7 +692,8 @@ function renderDocs(){
     h+="<ul class=\"doc-list\">";
     cat.docs.forEach(function(doc,i){
       var id=cat.id+"_"+i;
-      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+      var extLink=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
+      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+extLink+"</div>":(extLink?"<div style=\"margin-top:5px\">"+extLink+"</div>":"");
       h+="<li class=\"doc-item\">";
       h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
       h+="<div class=\"doc-chk "+(checked[id]?"on":"")+"\" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
