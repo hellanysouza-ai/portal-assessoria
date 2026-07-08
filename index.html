@@ -373,16 +373,12 @@ async function uploadArquivosCloudinary(){
         var fd = new FormData();
         fd.append("file", base64);
         fd.append("upload_preset", CLOUDINARY_PRESET);
-        fd.append("public_id", f.name.replace(/[^a-zA-Z0-9._-]/g,"_"));
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         if(!r.ok){ var d=await r.json(); throw new Error("Cloudinary "+r.status+": "+(d.error&&d.error.message||r.statusText)); }
         var data = await r.json();
         if(data.secure_url){
           // Adicionar fl_attachment para forçar download com nome correto
-          var dlUrl = data.secure_url
-            .replace("/raw/upload/", "/raw/upload/fl_attachment:"+f.name.replace(/[^a-zA-Z0-9._-]/g,"_")+"/")
-            .replace("/image/upload/", "/image/upload/fl_attachment:"+f.name.replace(/[^a-zA-Z0-9._-]/g,"_")+"/");
-          links.push(label+" → "+dlUrl);
+          links.push(label+" → "+data.secure_url);
         } else {
           links.push(label+" → (erro: sem URL)");
         }
