@@ -370,7 +370,9 @@ async function uploadArquivosCloudinary(){
         var data = await r.json();
         console.log("Cloudinary response:", JSON.stringify(data));
         if(data.secure_url){
-          links.push(label+" → "+data.secure_url);
+          // Adicionar fl_attachment na URL para forçar download
+          var finalUrl = data.secure_url.replace("/raw/upload/", "/raw/upload/fl_attachment/").replace("/image/upload/", "/image/upload/fl_attachment/");
+          links.push(label+" → "+finalUrl);
         } else {
           links.push(label+" → (erro: "+(data.error&&data.error.message||JSON.stringify(data))+")");
         }
