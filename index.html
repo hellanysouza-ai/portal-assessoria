@@ -378,12 +378,11 @@ async function uploadArquivosCloudinary(){
         var data = await r.json();
         if(data.secure_url){
           // Adicionar fl_attachment para forçar download com nome correto
-          // Para arquivos não-imagem, fl_attachment com nome original para forçar download correto
+          // Para arquivos não-imagem, fl_attachment simples para forçar download
           var imgExtsArr = ["jpg","jpeg","png","gif","webp","bmp","svg"];
           var fileExt = f.name.split(".").pop().toLowerCase();
           var isImg = imgExtsArr.indexOf(fileExt) >= 0;
-          var safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-          var finalUrl = isImg ? data.secure_url : data.secure_url.replace("/raw/upload/", "/raw/upload/fl_attachment:"+safeName+"/");
+          var finalUrl = isImg ? data.secure_url : data.secure_url.replace("/raw/upload/", "/raw/upload/fl_attachment/");
           links.push(label+" → "+finalUrl);
         } else {
           links.push(label+" → (erro: sem URL)");
