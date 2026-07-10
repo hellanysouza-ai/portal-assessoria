@@ -872,7 +872,7 @@ function confirmarEnvio(){
   var formTxt="";
 
   if(d.form==="amil"){
-    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" | CPF: "+v("am_resp_cpf")+" | RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" | Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
+    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+" | Alíquota: "+v("am_aliq")+" | ISS retido por: "+v("am_iss")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" | CPF: "+v("am_resp_cpf")+" | RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" | Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
     formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
       +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados para Amil</p>"
       +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
@@ -883,6 +883,8 @@ function confirmarEnvio(){
       +mkFRow("Agência",v("am_ag"))
       +mkFRow("Conta corrente",v("am_cc"))
       +mkFRow("Segmento",v("am_seg"))
+      +mkFRow("Alíquota",v("am_aliq"))
+      +mkFRow("ISS retido por",v("am_iss"))
       +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável / Sócio administrador</td></tr>"
       +mkFRow("Nome completo",v("am_resp_nome"))
       +mkFRow("CPF",v("am_resp_cpf"))
@@ -1098,10 +1100,17 @@ function renderUnimed(){
 // ─── FORMULÁRIOS ──────────────────────────────────────────────────────────────
 function ffIn(id,label,ph,type){type=type||"text";return "<div class=\"ff\"><label>"+label+"</label><input type=\""+type+"\" id=\""+id+"\" placeholder=\""+ph+"\"></div>";}
 
+function ffSel(id,label,opts){
+  var h="<div class=\"cf\"><label class=\"cl\">"+label+"</label><select id=\""+id+"\" class=\"ci\">";
+  h+="<option value=\"\">Selecione...</option>";
+  opts.forEach(function(o){h+="<option value=\""+o+"\">"+o+"</option>";});
+  h+="</select></div>";
+  return h;
+}
 function renderFormAmil(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados para Amil</div>";
   h+="<div class=\"fgt\">Corretora</div>"+ffIn("am_razao","Razão social","");
-  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+ffIn("am_aliq","Alíquota *","Ex: 2%")+ffSel("am_iss","ISS retido por *",["Amil","Corretora"])+"</div>";
   h+="<div class=\"fgt\">Responsável / Sócio administrador</div>"+ffIn("am_resp_nome","Nome completo","");
   h+="<div class=\"fg2\">"+ffIn("am_resp_cpf","CPF","000.000.000-00")+ffIn("am_resp_rg","RG","")+"</div>";
   h+=ffIn("am_resp_email","E-mail nominal","","email")+ffIn("am_resp_tel","Telefone","(00) 00000-0000");
@@ -1112,10 +1121,10 @@ function renderFormAmil(){
   h+="<div class=\"copy-ok\" id=\"cp-amil\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
   return h;
 }
-window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_aliq","am_iss","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
 window.copiar_amil=function(){
   var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
-  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
+  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+" Alíquota: "+v("am_aliq")+" ISS: "+v("am_iss")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
   navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-amil");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
 };
 
