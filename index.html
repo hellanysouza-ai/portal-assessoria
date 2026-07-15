@@ -372,28 +372,12 @@ async function uploadArquivosCloudinary(){
         });
         var fd = new FormData();
         fd.append("file", base64);
-        // Limpar nome do arquivo removendo caracteres inválidos incluindo barras
-        var safeFileName = f.name.replace(/[\/\\:*?"<>|]/g, "_");
         fd.append("upload_preset", CLOUDINARY_PRESET);
-        fd.append("use_filename", "true");
-        fd.append("display_name", safeFileName);
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         if(!r.ok){ var d=await r.json(); throw new Error("Cloudinary "+r.status+": "+(d.error&&d.error.message||r.statusText)); }
         var data = await r.json();
         if(data.secure_url){
-          // Adicionar fl_attachment para forçar download com nome correto
-          // Para arquivos não-imagem, fl_attachment simples para forçar download
-          var imgExtsArr = ["jpg","jpeg","png","gif","webp","bmp","svg"];
-          var fileExt = f.name.split(".").pop().toLowerCase();
-          var isImg = imgExtsArr.indexOf(fileExt) >= 0;
-          var finalUrl = data.secure_url;
-          if(!isImg){
-            // Forçar download para PDF, Word, Excel, etc.
-            finalUrl = finalUrl
-              .replace("/raw/upload/", "/raw/upload/fl_attachment/")
-              .replace("/image/upload/", "/image/upload/fl_attachment/");
-          }
-          links.push(label+" → "+finalUrl);
+          links.push(label+" → "+data.secure_url);
         } else {
           links.push(label+" → (erro: sem URL)");
         }
