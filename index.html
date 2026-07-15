@@ -10,13 +10,13 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 :root{--gold:#C9913A;--gold-bg:#fdf3e7;--gold-dark:#a8731e;--purple:#4A2050;--purple-bg:#f5eef8;--purple-light:#ede0f2}
 body{background:#f4f4f6;min-height:100vh}
-.portal-header{background:var(--purple);padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.portal-header{background:#fff;padding:0.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .portal-logo{display:flex;align-items:center;gap:12px}
 .portal-logo-icon{width:40px;height:40px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .portal-logo-icon i{font-size:22px;color:#fff}
 .portal-logo-text h1{font-size:16px;font-weight:700;color:#fff;line-height:1.2}
 .portal-logo-text p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
-.portal-badge{font-size:11px;font-weight:700;color:var(--gold);background:rgba(201,145,58,.15);border:1px solid rgba(201,145,58,.4);padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.portal-badge{font-size:11px;font-weight:700;color:var(--purple);background:#fff;border:1.5px solid var(--purple);padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;display:none}
 .nav-tabs{display:flex;border-bottom:2px solid var(--purple-light);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .nav-tab{flex:1;padding:12px 16px;font-size:13px;font-weight:700;color:var(--purple);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .nav-tab i{font-size:15px}
@@ -34,7 +34,7 @@ body{background:#f4f4f6;min-height:100vh}
 .comm-card-header{background:var(--purple);padding:10px 16px;display:flex;align-items:center;gap:8px}
 .comm-card-header span{font-size:13px;font-weight:700;color:#fff}
 .comm-card-header .sub{font-size:11px;color:rgba(255,255,255,.6);margin-left:4px}
-.comm-table{width:100%;border-collapse:collapse;font-size:12px}
+.comm-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
 .comm-table th{background:var(--purple);color:rgba(255,255,255,.85);padding:8px 10px;text-align:center;font-size:11px;font-weight:700;border-bottom:2px solid var(--gold)}
 .comm-table th.left{text-align:left;padding-left:14px}
 .comm-table td{padding:9px 10px;border-bottom:.5px solid #eee;text-align:center;font-size:12px;color:#111}
@@ -70,6 +70,9 @@ body{background:#f4f4f6;min-height:100vh}
 .op-title{font-size:15px;font-weight:700;color:var(--purple)}
 .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .cat-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--gold)}
+.extra-section{margin-top:22px}
+.extra-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.extra-section-title::before,.extra-section-title::after{content:'';flex:1;height:1px;background:#e0d5ea}
 .cat-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
 .cat-head i{font-size:15px;color:var(--gold)}
 .tag-obrig{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--gold-bg);color:var(--gold-dark);margin-left:4px;font-weight:700}
@@ -92,6 +95,8 @@ body{background:#f4f4f6;min-height:100vh}
 .up-lbl input{display:none}
 .f-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:var(--gold-dark)}
 .f-rm{cursor:pointer;color:var(--gold);margin-left:2px}
+.proc-btn{background:#f0ebf5;border:1.5px solid #d0c0dc;color:var(--purple);border-radius:20px;padding:6px 14px;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s}
+.proc-btn.proc-ativo{background:var(--purple);color:#fff;border-color:var(--purple)}
 .add-doc-btn{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--purple);cursor:pointer;background:none;border:none;font-family:Arial,sans-serif;padding:0}
 .info-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:var(--purple-bg);font-size:11px;color:var(--purple);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
 .info-box i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
@@ -185,9 +190,7 @@ body{background:#f4f4f6;min-height:100vh}
 
 /* ═══ MOBILE ═══ */
 @media(max-width:640px){
-  .portal-header{padding:.875rem 1rem}
-  .portal-logo-text h1{font-size:14px}
-  .portal-logo-text p{display:none}
+  .portal-header{padding:.6rem 1rem}
   .portal-badge{font-size:10px;padding:3px 9px}
   .nav-tab{font-size:12px;padding:10px 8px}
   .nav-tab i{display:none}
@@ -195,8 +198,7 @@ body{background:#f4f4f6;min-height:100vh}
   .comm-card-header .sub{display:none}
   .comm-table{font-size:11px}
   .comm-table th,.comm-table td{padding:6px 5px}
-  .comm-table th:nth-child(6),.comm-table td:nth-child(6),
-  .comm-table th:nth-child(7),.comm-table td:nth-child(7){display:none}
+  
   .corretor-grid{grid-template-columns:1fr}
   .doc-grid{grid-template-columns:1fr}
   .footer-doc{flex-direction:column;gap:8px}
@@ -224,13 +226,7 @@ body{background:#f4f4f6;min-height:100vh}
 </div>
 
 <div class="portal-header">
-  <div class="portal-logo">
-    <div class="portal-logo-icon"><i class="ti ti-building-community"></i></div>
-    <div class="portal-logo-text">
-      <h1>Portal de Assessoria Affinity</h1>
-      <p>Corretora de Seguros</p>
-    </div>
-  </div>
+  <img src="" alt="Affinity Corretora" style="height:42px">
   <span class="portal-badge"><i class="ti ti-shield-check" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>Área do Corretor</span>
 </div>
 
@@ -260,14 +256,16 @@ body{background:#f4f4f6;min-height:100vh}
       <span>Agenciamento + Vitalício — Affinity Corretora</span>
       <span class="sub">Multinotas</span>
     </div>
-    <table class="comm-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -1px"><table class="comm-table">
       <thead><tr>
         <th class="left">Operadora</th><th>Produto</th><th>Total</th>
         <th>1ª</th><th>2ª</th><th>3ª</th><th>4ª</th><th>Vitalício</th>
       </tr></thead>
       <tbody id="comm-tbody"></tbody>
-    </table>
-    <div class="comm-note"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente. Select PME: demais parcelas = 10%/mês.</span></div>
+    </table></div>
+    <div class="comm-note" id="comm-note-geral"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente.</span></div>
+    <div class="comm-note" id="comm-note-select" style="display:none"><i class="ti ti-info-circle"></i><span>Select: demais parcelas após agenciamento = 10%/mês até completar 10 meses.</span></div>
+    <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME: a partir da 4ª = 2% vitalício. Select PME: 3ª–7ª = 10%, a partir da 8ª = 2% vitalício.</span></div>
   </div>
   <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
 </div>
@@ -290,6 +288,7 @@ body{background:#f4f4f6;min-height:100vh}
     <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
     <div class="chips" id="doc-chips">
       <div class="chip active" data-op="">Selecione...</div>
+      <div class="chip" data-op="alice" data-soon="1">Alice <span style="font-size:10px;background:#C9A84C;color:#fff;border-radius:4px;padding:1px 5px;margin-left:3px;">Em breve</span></div>
       <div class="chip" data-op="amil">Amil</div>
       <div class="chip" data-op="assim_saude">Assim Saúde</div>
       <div class="chip" data-op="hapvida">Hapvida</div>
@@ -305,12 +304,18 @@ body{background:#f4f4f6;min-height:100vh}
   </div>
 
   <div id="doc-footer" style="display:none">
-    <div class="footer-doc">
-      <div class="prog-wrap">
-        <span class="prog-txt" id="prog-txt">0 de 0 confirmados</span>
-        <div class="prog-bar-bg"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+    <div class="footer-doc" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div class="cf full">
+        <label style="font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:4px"><i class="ti ti-notes" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Observações (opcional)</label>
+        <textarea id="notas-corretor" rows="2" placeholder="Alguma observação adicional sobre o processo..." style="border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;resize:vertical;transition:border .15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#ddd'"></textarea>
       </div>
-      <button class="btn-send" id="btn-send"><i class="ti ti-send"></i>Enviar processo</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div class="prog-wrap">
+          <span class="prog-txt" id="prog-txt">0 de 0 confirmados</span>
+          <div class="prog-bar-bg"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+        </div>
+        <button class="btn-send" id="btn-send"><i class="ti ti-send"></i>Enviar processo</button>
+      </div>
     </div>
   </div>
 </div>
@@ -331,11 +336,76 @@ body{background:#f4f4f6;min-height:100vh}
 </div>
 
 <script>
+// ─── CONFIG CLOUDINARY ───────────────────────────────────────────────────────
+var CLOUDINARY_CLOUD    = "dlic6x4bt";
+var CLOUDINARY_PRESET   = "affinity_portal_pub";
+
+async function uploadArquivosCloudinary(){
+  var links = [];
+  var d = dados[filtroDoc];
+  // Montar mapa id → nome do documento
+  var nomeDoc = {};
+  if(d && d.cats){
+    d.cats.forEach(function(cat){
+      cat.docs.forEach(function(doc,i){
+        nomeDoc[cat.id+"_"+i] = doc.t;
+      });
+    });
+  }
+  var ids = Object.keys(arquivos);
+  for(var i=0;i<ids.length;i++){
+    var id = ids[i];
+    var files = arquivos[id]||[];
+    var label = nomeDoc[id] || id; // nome do documento ou fallback para o id
+    for(var j=0;j<files.length;j++){
+      var f = files[j];
+      var ext = f.name.split(".").pop().toLowerCase();
+      var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+      var resourceType = imgExts.indexOf(ext)>=0 ? "image" : "raw";
+      try{
+        // Converter para base64 igual ao formulário de boletos
+        var base64 = await new Promise(function(resolve, reject){
+          var reader = new FileReader();
+          reader.onload  = function(){ resolve(reader.result); };
+          reader.onerror = function(){ reject(new Error("Erro ao ler arquivo")); };
+          reader.readAsDataURL(f);
+        });
+        var fd = new FormData();
+        fd.append("file", base64);
+        fd.append("upload_preset", CLOUDINARY_PRESET);
+        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
+        if(!r.ok){ var d=await r.json(); throw new Error("Cloudinary "+r.status+": "+(d.error&&d.error.message||r.statusText)); }
+        var data = await r.json();
+        if(data.secure_url){
+          // Adicionar fl_attachment para forçar download com nome correto
+          // Para arquivos não-imagem, fl_attachment simples para forçar download
+          var imgExtsArr = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+          var fileExt = f.name.split(".").pop().toLowerCase();
+          var isImg = imgExtsArr.indexOf(fileExt) >= 0;
+          var finalUrl = data.secure_url;
+          if(!isImg){
+            // Forçar download para PDF, Word, Excel, etc.
+            finalUrl = finalUrl
+              .replace("/raw/upload/", "/raw/upload/fl_attachment/")
+              .replace("/image/upload/", "/image/upload/fl_attachment/");
+          }
+          links.push(label+" → "+finalUrl);
+        } else {
+          links.push(label+" → (erro: sem URL)");
+        }
+      }catch(err){
+        links.push(label+" → (erro: "+err.message+")");
+      }
+    }
+  }
+  return links.join("\n");
+}
+
 // ─── CONFIG EMAILJS ──────────────────────────────────────────────────────────
-var EMAILJS_PUBLIC_KEY  = "i0baUTbhdjYvFkT9c";
+var EMAILJS_PUBLIC_KEY  = "W7viIcFvtgkis4vqK";
 var EMAILJS_SERVICE_ID  = "service_gvedztq";
-var TEMPLATE_ASSESSORIA = "template_portal_assessoria"; // criar no EmailJS
-var TEMPLATE_CORRETOR   = "template_portal_corretor";   // criar no EmailJS
+var TEMPLATE_ASSESSORIA = "template_assessoria"; // EmailJS
+var TEMPLATE_CORRETOR   = "template_corretor";
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -358,24 +428,30 @@ var FILES = {
 
 // ─── COMISSÕES ────────────────────────────────────────────────────────────────
 var comissoes=[
-  {op:"amil",     nome:"Amil",          prod:"PME",tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
-  {op:"assim",    nome:"Assim Saúde",   prod:"PME",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",  vit:"2% vit."},
+  {op:"alice", nome:"Alice",prod:"PME",tot:"—",p1:"—",p2:"—",p3:"—",p4:"—",vit:"Em breve"},
+  {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
+  {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"250%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"5×20%"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 19+/Fam.",tot:"275%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"3×25%"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF Odonto", tot:"120%",p1:"100%",p2:"10%", p3:"10%", p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME",       tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME Odonto",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
   {op:"hapvida",  nome:"Hapvida",       prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."},
   {op:"leve",     nome:"Leve Saúde",    prod:"PF", tot:"150%",p1:"100%",p2:"50%", p3:"–",   p4:"–",  vit:"2% vit."},
   {op:"leve",     nome:"Leve Saúde",    prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"25%", p4:"25%",vit:"2% vit."},
   {op:"medsênior",nome:"MedSênior",     prod:"PF", tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"–"},
   {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
   {op:"select",   nome:"Select",        prod:"PF", tot:"200%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%"},
-  {op:"select",   nome:"Select",        prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"2% vit."},
-  {op:"select",   nome:"Select",        prod:"Emp",tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2%"},
+  {op:"select",   nome:"Select",        prod:"PME",tot:"300%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"5×10%+2% vit."},
+  {op:"select",   nome:"Select",        prod:"PJ", tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2% vit."},
   {op:"unimed",   nome:"Seguros Unimed",prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."}
 ];
 var filtroComm="todas";
 function renderComm(){
   var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
-  var pc={"PME":"pill pill-pme","PF":"pill pill-pf","Emp":"pill pill-pj"};
+  var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj"};
   document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
-    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
+    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":r.vit==="Em breve"?"<span class=\"vit-pill\" style=\"background:#fff3dc;color:#b07800\">Em breve</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
     var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
     return "<tr><td class=\"left\">"+r.nome+"</td><td><span class=\""+pc[r.prod]+"\">"+r.prod+"</span></td><td class=\"total\">"+r.tot+"</td><td>"+mkC(r.p1)+"</td><td>"+mkC(r.p2)+"</td><td>"+mkC(r.p3)+"</td><td>"+mkC(r.p4)+"</td><td>"+vh+"</td></tr>";
   }).join("");
@@ -385,10 +461,15 @@ document.getElementById("comm-chips").addEventListener("click",function(e){
   filtroComm=c.dataset.comm||"todas";
   document.querySelectorAll("#comm-chips .chip").forEach(function(x){x.classList.remove("active");});
   c.classList.add("active");renderComm();
+  var noteSelect=document.getElementById("comm-note-select");
+  if(noteSelect)noteSelect.style.display=(filtroComm==="select"||filtroComm==="todas")?"flex":"none";
+  var noteAssim=document.getElementById("comm-note-assim");
+  if(noteAssim)noteAssim.style.display=(filtroComm==="assim"||filtroComm==="todas")?"flex":"none";
 });
 
 // ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
 var dados={
+  alice:{nome:"Alice",form:null,soon:true,cats:[]},
   amil:{nome:"Amil",form:"amil",cats:[
     {id:"amil_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
      info:"CNAEs aceitos: 66.22.300 / 66.29.100 / 65.50.200. Multinotas somente se o corretor já estiver no Sis.",warn:null,
@@ -405,7 +486,7 @@ var dados={
       {t:"E-mail e telefone nominais dos sócios"},
       {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)"}
     ]},
-    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:false,info:null,
+    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:true,info:null,
      warn:"Quando a assessoria atual não retorna: o corretor preenche o Termo de Desvinculação, assina e nos envia junto com e-mail à plataforma atual. O e-mail substitui a assinatura após 30 dias.",
      docs:[
       {t:"Comprovante bancário"},{t:"Contrato social (com o sócio administrador)"},
@@ -418,72 +499,96 @@ var dados={
       {t:"Termo de Desvinculação — assinado pela corretora e assessoria atual",dl:"amil_desvinculacao"},
       {t:"Código atual na Amil"},
       {t:"E-mail enviado à assessoria atual (substitui assinatura após 30 dias)"}
+    ]},
+    {id:"amil_alt",titulo:"Alteração de comissionamento",ico:"ti-edit",obrig:false,
+     info:"Para realizar alteração de comissionamento na Amil.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — assinado pela corretora e pela plataforma Affinity (apenas para corretoras cadastradas antes de outubro/2018)",dl:"amil_vinculacao"},
+      {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"}
+    ]},
+    {id:"amil_dir",titulo:"Código direto na Amil → Vinculação à plataforma",ico:"ti-link",obrig:false,
+     info:"Quando o corretor possui código Direto na Amil e deseja se vincular à plataforma Affinity.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — apenas preenchido (será enviado para assinatura digital posteriormente)",dl:"amil_vinculacao"},
+      {t:"Contrato Social da Corretora — com o sócio administrador inserido no processo"},
+      {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"},
+      {t:"Comprovante Bancário — documento que comprove o nome do Banco, Número da Agência e Conta Corrente com nome ou CNPJ da Corretora"},
+      {t:"Cartão CNPJ — emitido na Receita Federal sobre o CNPJ da Corretora"},
+      {t:"Formulário Cadastral — preenchido nas duas páginas",dl:"amil_formulario"}
     ]}
   ]},
   assim_saude:{nome:"Assim Saúde",form:"assim",cats:[
-    {id:"ass_n",titulo:"Abertura de código",ico:"ti-user-plus",obrig:true,
-     info:"Assinatura via DocuSign — preencha os dados abaixo.",warn:null,
+    {id:"ass_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
      docs:[
-      {t:"Contrato social e última alteração (mesmo endereço do CNPJ e alvará)"},
-      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais"},
-      {t:"Cartão do CNPJ (mesmo endereço do contrato social e alvará)"},
-      {t:"Cartão SUSEP"},{t:"Cheque ou cartão do banco"},
+      {t:"Contrato social e última alteração — devidamente registrado (Junta Comercial ou Registro Civil de PJ), com o mesmo endereço do CNPJ e alvará"},
+      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais constantes no contrato/estatuto social para assinatura do contrato"},
+      {t:"Cartão do CNPJ — com o mesmo endereço do contrato social/última alteração e do alvará"},
+      {t:"Cartão SUSEP"},
+      {t:"Cheque ou cartão do banco"},
       {t:"Comprovante de residência dos sócios"},
-      {t:"Alvará (mesmo endereço do contrato social e CNPJ)"},
+      {t:"Alvará — com o mesmo endereço do contrato social/última alteração e do CNPJ"}
+    ]},
+    {id:"ass_form",titulo:"Ficha cadastral e contrato (DocuSign)",ico:"ti-file-signature",obrig:true,
+     info:"Assinatura realizada via DocuSign — preencha os dados abaixo e anexe os arquivos.",warn:null,
+     docs:[
       {t:"Ficha cadastral preenchida",dl:"assim_ficha"},
       {t:"Termo de comissão preenchido (assinatura digital posterior)",dl:"assim_contrato"}
     ]}
   ]},
   hapvida:{nome:"Hapvida",form:null,cats:[
-    {id:"hap_n",titulo:"Abertura de código",ico:"ti-user-plus",obrig:true,
-     info:"Canal: Varejo — PF, Super Simples e PME. Filial: SP/RJ. Necessário De Acordo do Diretor Regional ou Nacional.",warn:null,
+    {id:"hap_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
+     info:"Canal: Varejo — PF, Super Simples e PME. Filial SP/RJ. CNAE obrigatório: 66.22-3-00. Comprovante bancário não pode estar em nome de Pessoa Física.",warn:null,
      docs:[
       {t:"Cópia do contrato social e última alteração"},
-      {t:"Cartão do CNPJ — CNAE 66.22-3-00"},
-      {t:"Comprovante bancário atualizado — não é permitido conta PF"},
-      {t:"RG e CPF ou CNH e comprovante residencial dos sócios"},
-      {t:"Carta de confirmação de dados bancários (modelo Hapvida)",dl:"hapvida_confirmacao"},
-      {t:"Fator tributário — Simples Nacional: PGDAS mais atual"},
-      {t:"Telefone da corretora"},{t:"E-mail para informações financeiras"},
-      {t:"Nome e e-mail do representante da corretora"},
-      {t:"Nome e e-mail da testemunha"},
-      {t:"Carta de agenciamento e comissão — assinada e carimbada",dl:"hapvida_agenciamento"},
-      {t:"Checklist de criação de códigos — preenchido",dl:"hapvida_checklist"}
+      {t:"Cópia do cartão CNPJ — CNAE 66.22-3-00 (Corretores e Agentes de Planos de Previdência Complementar e de Saúde)"},
+      {t:"Comprovante bancário atualizado — cópia do cheque, cartão frente e verso, extrato ou contrato com assinatura do gerente (não é permitido conta PF)"},
+      {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
+      {t:"Carta de confirmação dos dados bancários — conforme modelo, carimbada e assinada",dl:"hapvida_confirmacao"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
+      {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
+      {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
     ]},
-    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:false,info:null,warn:null,
+    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:true,info:null,warn:null,
      docs:[
-      {t:"Cópia do contrato social"},{t:"Cartão do CNPJ"},
-      {t:"RG e CPF ou CNH dos sócios"},{t:"Comprovante de endereço"},
-      {t:"Comprovante bancário"},
-      {t:"Carta de agenciamento e comissão",dl:"hapvida_agenciamento"},
-      {t:"Código atual na Hapvida"},
-      {t:"Termo de desvinculação da assessoria anterior (quando aplicável)"}
+      {t:"Cópia do contrato social e última alteração"},
+      {t:"Cópia do cartão CNPJ — CNAE 66.22-3-00"},
+      {t:"Comprovante bancário atualizado — não é permitido conta PF"},
+      {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
+      {t:"Carta de confirmação dos dados bancários — carimbada e assinada",dl:"hapvida_confirmacao"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
+      {t:"Código atual na Hapvida (NDI SP)"},
+      {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
+      {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
     ]}
   ]},
   leve_saude:{nome:"Leve Saúde",form:"leve",cats:[
-    {id:"lev_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
-     info:"Formulário com comissão — Opção 1 de particionamento.",warn:null,
+    {id:"lev_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
      docs:[
       {t:"Contrato social com suas alterações e identificação dos sócios"},
       {t:"Comprovante de inscrição no CNPJ (Cartão do CNPJ)"},
       {t:"Documentos de identificação dos sócios ou responsáveis legais"},
-      {t:"Cópia da folha de cheque com dados bancários da empresa"},
+      {t:"Cópia da folha de cheque com dados bancários da empresa"}
+    ]},
+    {id:"lev_form",titulo:"Formulário de particionamento",ico:"ti-forms",obrig:true,
+     info:"Preencha os dados abaixo e anexe o formulário assinado (Opção 1 de particionamento).",warn:null,
+     docs:[
       {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"}
     ]}
   ]},
   "medsênior":{nome:"MedSênior",form:"medsênior",cats:[
-    {id:"med_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,
-     info:"CNAE: 6622-3/00 — Corretores e agentes de planos de saúde.",warn:null,
+    {id:"med_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:"CNAE obrigatório: 6622-3/00 — Corretores e agentes de seguros, de planos de previdência complementar e de saúde.",warn:null,
      docs:[
-      {t:"Cartão do CNPJ (CNAE 6622-3/00)"},
-      {t:"Conta bancária para depósito de comissões"},
-      {t:"Cópia do contrato social atualizado e assinado"},
-      {t:"Checklist de abertura MedSênior",dl:"med_checklist"}
-    ]}
+      {t:"Cartão do CNPJ — CNAE compatível: 6622-3/00 (Corretores e agentes de seguros, de planos de previdência complementar e de saúde)"},
+      {t:"Conta bancária para depósito de comissões — ex.: cheque da empresa, cartão bancário (frente e verso) ou extrato"},
+      {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"}
+    ]},
   ]},
   seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[]},
   select:{nome:"Select",form:"select",cats:[
-    {id:"sel_n",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,info:null,warn:null,
+    {id:"sel_docs",titulo:"Documentos necessários",ico:"ti-file-check",obrig:true,info:null,warn:null,
      docs:[
       {t:"Contrato da nova assessoria com a Select assinado"},
       {t:"Contrato social e última alteração"},{t:"Cartão do CNPJ"},
@@ -495,7 +600,7 @@ var dados={
   ]}
 };
 
-var checked={},arquivos={},filtroDoc="",opcaoSel=1;
+var checked={},arquivos={},filtroDoc="",opcaoSel=1,processoSel="";
 
 // ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
 document.querySelectorAll(".nav-tab").forEach(function(tab){
@@ -539,6 +644,8 @@ document.addEventListener("change",function(e){
   if(!arquivos[id])arquivos[id]=[];
   Array.prototype.forEach.call(inp.files,function(f){arquivos[id].push(f);});
   renderBadges(id);inp.value="";
+  // Auto-tick: marcar o checkbox ao anexar arquivo
+  if(!checked[id]){checked[id]=true;var chkEl=document.getElementById("chk_"+id);if(chkEl){chkEl.classList.add("on");}atualizarProg();}
 });
 
 function renderBadges(id){
@@ -556,6 +663,8 @@ function mkDl(key,key2){
   return h;
 }
 
+function setProcesso(p){processoSel=p;renderDocs();}
+
 // ─── RENDER DOCS ──────────────────────────────────────────────────────────────
 function renderDocs(){
   var cont=document.getElementById("doc-content");
@@ -566,10 +675,40 @@ function renderDocs(){
   }
   var d=dados[filtroDoc];
   footer.style.display="block";
+  if(d.soon){
+    cont.innerHTML="<div class=\"empty-state\"><i class=\"ti ti-clock\" style=\"color:#C9A84C\"></i><p style=\"color:#C9A84C;font-weight:700\">Em breve</p><p style=\"font-size:13px;color:#888\">As informações da operadora <strong>"+d.nome+"</strong> estarão disponíveis em breve.</p></div>";
+    footer.style.display="none";
+    return;
+  }
   if(d.form==="unimed"){cont.innerHTML=renderUnimed();atualizarProg();return;}
   var h="<div class=\"op-label\"><span class=\"op-badge-pill\">"+d.nome+"</span><span class=\"op-title\">Documentos necessários</span></div>";
+
+  // Seletor de processo (Novo Cadastro / Transferência / Ambos) — só quando há mais de 1 categoria
+  var temNovoCad = d.cats.some(function(c){return c.id.indexOf("_n")!==-1;});
+  var temTransf   = d.cats.some(function(c){return c.id.indexOf("_t")!==-1;});
+  if(temNovoCad && temTransf){
+    h+="<div class=\"processo-sel\" style=\"display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap\">";
+    h+="<button class=\"proc-btn"+(processoSel==="novo"?" proc-ativo":"")+"\" onclick=\"setProcesso('novo')\"><i class=\"ti ti-user-plus\"></i> Novo Cadastro</button>";
+    h+="<button class=\"proc-btn"+(processoSel==="transf"?" proc-ativo":"")+"\" onclick=\"setProcesso('transf')\"><i class=\"ti ti-arrows-exchange\"></i> Transferência</button>";
+    h+="</div>";
+  }
+
+  // Separar cats: processo (tem _n ou _t) e extras (não tem nenhum)
+  var catsProc=d.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra=d.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+
+  // Se há processo novo e transf mas nenhum foi selecionado, mostrar aviso
+  if(processoSel==="" && catsProc.length>0){
+    h+="<div class=\"info-box\" style=\"margin-bottom:14px\"><i class=\"ti ti-hand-click\"></i><span>Selecione o tipo de processo acima para ver os documentos necessários.</span></div>";
+  }
   h+="<div class=\"doc-grid\">";
-  d.cats.forEach(function(cat){
+  catsProc.forEach(function(cat){
+    if(processoSel===""){ return; } // Não mostrar docs sem processo selecionado
+    // Filtrar categoria conforme processo selecionado
+    var isNovo  = cat.id.indexOf("_n")!==-1;
+    var isTransf= cat.id.indexOf("_t")!==-1;
+    if(processoSel==="novo"   && isTransf && !isNovo) return;
+    if(processoSel==="transf" && isNovo   && !isTransf) return;
     h+="<div class=\"cat-card\">";
     h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
     if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
@@ -577,7 +716,8 @@ function renderDocs(){
     h+="<ul class=\"doc-list\">";
     cat.docs.forEach(function(doc,i){
       var id=cat.id+"_"+i;
-      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+      var extLink=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
+      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+extLink+"</div>":(extLink?"<div style=\"margin-top:5px\">"+extLink+"</div>":"");
       h+="<li class=\"doc-item\">";
       h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
       h+="<div class=\"doc-chk "+(checked[id]?"on":"")+"\" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
@@ -590,6 +730,36 @@ function renderDocs(){
     h+="</div>";
   });
   h+="</div>";
+
+  // Seção extra (Alteração, Código Direto, etc.) — sempre visível, fora do filtro de processo
+  if(catsExtra.length>0){
+    h+="<div class=\"extra-section\">";
+    h+="<div class=\"extra-section-title\">Outros processos</div>";
+    h+="<div class=\"doc-grid\">";
+    catsExtra.forEach(function(cat){
+      var id,dlH;
+      h+="<div class=\"cat-card\">";
+      h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
+      if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
+      if(cat.warn)h+="<div class=\"warn-box\"><i class=\"ti ti-alert-triangle\"></i><span>"+cat.warn+"</span></div>";
+      h+="<ul class=\"doc-list\">";
+      cat.docs.forEach(function(doc,i){
+        id=cat.id+"_"+i;
+        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+        h+="<li class=\"doc-item\">";
+        h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
+        h+="<div class=\"doc-chk "+(checked[id]?"on":"")+" \" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
+        h+=dlH;
+        h+="<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+        h+="</li>";
+      });
+      h+="</ul>";
+      h+="<button class=\"add-doc-btn\" data-add=\""+cat.id+"|"+filtroDoc+"\"><i class=\"ti ti-plus\"></i>Adicionar documento</button>";
+      h+="</div>";
+    });
+    h+="</div></div>";
+  }
+
   h+=renderForm(d.form);
   cont.innerHTML=h;
   if(d.form==="leve")renderTabPart();
@@ -658,26 +828,160 @@ function abrirModal(){
 }
 function fecharModal(){document.getElementById("modal").classList.remove("open");}
 
+function mkFRow(label,val){
+  return "<tr>"
+    +"<td style=\"padding:5px 10px 5px 0;color:#888;font-size:11px;font-weight:700;width:42%;vertical-align:top;border-bottom:1px solid #f5f0f9\">"+label+"</td>"
+    +"<td style=\"padding:5px 0;color:#2D1228;font-size:12px;border-bottom:1px solid #f5f0f9\">"+val+"</td>"
+    +"</tr>";
+}
+
 function confirmarEnvio(){
   var cor=getCorretor();
   var d=dados[filtroDoc];
-  var obs=document.getElementById("e-obs").value.trim();
+  var obs=(document.getElementById("notas-corretor")||{value:""}).value.trim()||(document.getElementById("e-obs")||{value:""}).value.trim();
 
   // Montar checklist
   var checklist="";
+  var checklistHtml="";
   if(d.form==="unimed"){
     checklist="SEGUROS UNIMED — Passo a passo:\n1. www.segurosunimed.com.br → Seja um corretor\n2. Preencha e anexe documentos\n3. Vinculado a Assessoria: NÃO\n4. Até 10 dias úteis\n5. Código por e-mail\n6. assessoria@affinitycorretora.com.br";
+    checklistHtml="<p><strong>SEGUROS UNIMED — Passo a passo</strong></p><ol><li>www.segurosunimed.com.br → Seja um corretor</li><li>Preencha e anexe documentos</li><li>Vinculado a Assessoria: <strong>NÃO</strong></li><li>Até 10 dias úteis</li><li>Código por e-mail</li><li>assessoria@affinitycorretora.com.br</li></ol>";
   } else {
     d.cats.forEach(function(cat){
-      checklist+=cat.titulo.toUpperCase()+":\n";
+      // Filtrar categorias conforme processo selecionado
+      var isNovo  = cat.id.indexOf("_n")!==-1;
+      var isTransf= cat.id.indexOf("_t")!==-1;
+      if(processoSel==="novo"   && isTransf && !isNovo) return;
+      if(processoSel==="transf" && isNovo   && !isTransf) return;
+      var docsAnexados = [];
+      var docsAnexadosHtml = [];
       cat.docs.forEach(function(doc,i){
         var id=cat.id+"_"+i;
-        checklist+=(checked[id]?"✓":"○")+" "+doc.t+"\n";
+        if(arquivos[id]&&arquivos[id].length>0){
+          docsAnexados.push("📎 "+doc.t+" ("+arquivos[id].map(function(f){return f.name;}).join(", ")+")");
+          docsAnexadosHtml.push("<li style='color:#1a7c3e'>📎 <strong>"+doc.t+"</strong> — "+arquivos[id].map(function(f){return f.name;}).join(", ")+"</li>");
+        } else if(checked[id]){
+          docsAnexados.push("✓ "+doc.t);
+          docsAnexadosHtml.push("<li style='color:#555'>✓ "+doc.t+"</li>");
+        }
       });
-      checklist+="\n";
+      if(docsAnexados.length>0){
+        checklist+=cat.titulo.toUpperCase()+":\n";
+        docsAnexados.forEach(function(l){checklist+=l+"\n";});
+        checklist+="\n";
+        checklistHtml+="<p style='margin:12px 0 4px;font-weight:700;color:#4A2050;border-bottom:1px solid #ede0f2;padding-bottom:4px'>"+cat.titulo+"</p><ul style='margin:0;padding-left:18px;line-height:1.7'>"+docsAnexadosHtml.join("")+"</ul>";
+      }
     });
   }
-  if(obs) checklist+="\nObservações: "+obs;
+  if(obs){ checklist+="\nObservações: "+obs; checklistHtml+="<p style='margin:14px 0 4px;font-weight:700;color:#4A2050'>Observações</p><p style='background:#fdf3e7;border-radius:6px;padding:8px 12px;color:#555'>"+obs+"</p>"; }
+
+  var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+
+  // ─── Coletar dados dos formulários ───────────────────────────────────────
+  var v=function(id){var el=document.getElementById(id);return(el&&el.value.trim())?el.value.trim():"—";};
+  var formHtml="";
+  var formTxt="";
+
+  if(d.form==="amil"){
+    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+" | Alíquota: "+v("am_aliq")+" | ISS retido por: "+v("am_iss")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" | CPF: "+v("am_resp_cpf")+" | RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" | Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados para Amil</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("am_razao"))
+      +mkFRow("CNPJ",v("am_cnpj"))
+      +mkFRow("CCM / Inscrição municipal",v("am_ccm"))
+      +mkFRow("Banco",v("am_banco"))
+      +mkFRow("Agência",v("am_ag"))
+      +mkFRow("Conta corrente",v("am_cc"))
+      +mkFRow("Segmento",v("am_seg"))
+      +mkFRow("Alíquota",v("am_aliq"))
+      +mkFRow("ISS retido por",v("am_iss"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável / Sócio administrador</td></tr>"
+      +mkFRow("Nome completo",v("am_resp_nome"))
+      +mkFRow("CPF",v("am_resp_cpf"))
+      +mkFRow("RG",v("am_resp_rg"))
+      +mkFRow("E-mail nominal",v("am_resp_email"))
+      +mkFRow("Telefone",v("am_resp_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome completo",v("am_test_nome"))
+      +mkFRow("CPF",v("am_test_cpf"))
+      +mkFRow("E-mail",v("am_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Carta Anticorrupção</td></tr>"
+      +mkFRow("Local",v("am_local"))
+      +mkFRow("Data",v("am_data"))
+      +"</table></div>";
+  } else if(d.form==="assim"){
+    formTxt="FICHA ASSIM SAÚDE\nRazão: "+v("as_razao")+" | CNPJ: "+v("as_cnpj")+" | Tel: "+v("as_tel")+"\nRepresentante: "+v("as_rl_nome")+" | "+v("as_rl_email")+"\nTestemunha: "+v("as_test_nome")+" | "+v("as_test_email")+"\nSite Assim: "+v("as_site_nome")+" | "+v("as_site_email")+"\nPlataforma: "+v("as_plat_nome")+" | "+v("as_plat_email");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Ficha cadastral — Assim Saúde</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("as_razao"))
+      +mkFRow("CNPJ",v("as_cnpj"))
+      +mkFRow("Telefone",v("as_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_rl_nome"))
+      +mkFRow("E-mail",v("as_rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_test_nome"))
+      +mkFRow("E-mail",v("as_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Acesso à plataforma</td></tr>"
+      +mkFRow("Nome — site Assim",v("as_site_nome"))
+      +mkFRow("E-mail — site Assim",v("as_site_email"))
+      +mkFRow("Nome — plataforma online",v("as_plat_nome"))
+      +mkFRow("E-mail — plataforma online",v("as_plat_email"))
+      +"</table></div>";
+  } else if(d.form==="leve"){
+    formTxt="PARTICIONAMENTO LEVE SAÚDE (Opção "+opcaoSel+")\nCorretora: "+v("cor_razao")+" | CNPJ: "+v("cor_cnpj")+"\nBanco: "+v("cor_banco")+" | Agência: "+v("cor_ag")+" | Conta: "+v("cor_cc")+"\nCidade: "+v("form_cidade")+" | Data: "+v("form_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Particionamento — Leve Saúde (Opção "+opcaoSel+")</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("cor_razao"))
+      +mkFRow("CNPJ",v("cor_cnpj"))
+      +mkFRow("Banco",v("cor_banco"))
+      +mkFRow("Agência",v("cor_ag"))
+      +mkFRow("Conta corrente",v("cor_cc"))
+      +mkFRow("Cidade",v("form_cidade"))
+      +mkFRow("Data",v("form_data"))
+      +"</table></div>";
+  } else if(d.form==="medsênior"){
+    formTxt="DADOS MEDSÊNIOR\nRepresentante: "+v("rl_nome")+" | CPF: "+v("rl_cpf")+" | Nasc: "+v("rl_nasc")+" | E-mail: "+v("rl_email")+"\nTestemunha: "+v("test_nome")+" | CPF: "+v("test_cpf")+" | Nasc: "+v("test_nasc")+" | E-mail: "+v("test_email")+"\nResp. NF: "+v("nf_nome")+" | CPF: "+v("nf_cpf")+" | Nasc: "+v("nf_nasc")+" | E-mail: "+v("nf_email")+"\nTelefone: "+v("tel_fixo");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados — MedSênior</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal</td></tr>"
+      +mkFRow("Nome",v("rl_nome"))
+      +mkFRow("CPF",v("rl_cpf"))
+      +mkFRow("Nascimento",v("rl_nasc"))
+      +mkFRow("E-mail",v("rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome",v("test_nome"))
+      +mkFRow("CPF",v("test_cpf"))
+      +mkFRow("Nascimento",v("test_nasc"))
+      +mkFRow("E-mail",v("test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Resp. comissão / NF</td></tr>"
+      +mkFRow("Nome",v("nf_nome"))
+      +mkFRow("CPF",v("nf_cpf"))
+      +mkFRow("Nascimento",v("nf_nasc"))
+      +mkFRow("E-mail",v("nf_email"))
+      +mkFRow("Telefone fixo",v("tel_fixo"))
+      +"</table></div>";
+  } else if(d.form==="select"){
+    formTxt="DADOS SELECT\nNome: "+v("sel_nome")+" | CPF: "+v("sel_cpf")+" | Tel: "+v("sel_tel")+" | E-mail: "+v("sel_email");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados obrigatórios — Select</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável pela comissão</td></tr>"
+      +mkFRow("Nome",v("sel_nome"))
+      +mkFRow("CPF",v("sel_cpf"))
+      +mkFRow("Telefone",v("sel_tel"))
+      +mkFRow("E-mail",v("sel_email"))
+      +"</table></div>";
+  }
+
+  if(formTxt) checklist += "\n\n" + formTxt;
+  if(formHtml) checklistHtml += formHtml;
+
+  // ─── Fim coleta formulários ───────────────────────────────────────────────
 
   var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
 
@@ -689,6 +993,7 @@ function confirmarEnvio(){
     corretor_email: cor.email,
     operadora:      d.nome,
     checklist:      checklist,
+    checklist_html: checklistHtml,
     data_envio:     data_envio,
     observacoes:    obs||"Nenhuma"
   };
@@ -697,8 +1002,10 @@ function confirmarEnvio(){
     corretor_sis:   cor.sis,
     operadora:      d.nome,
     checklist:      checklist,
+    checklist_html: checklistHtml,
     data_envio:     data_envio,
-    to_email:       cor.email
+    to_email:       cor.email,
+    mensagem_status: "Em breve entraremos em contato para informar o andamento do processo."
   };
 
   // Mostrar overlay
@@ -710,11 +1017,40 @@ function confirmarEnvio(){
   var successIcon=document.getElementById("success-icon");
   var sendingText=document.getElementById("sending-text");
   overlay.classList.add("open");
-  sendingText.textContent="Enviando...";
+  sendingText.textContent="Enviando arquivos...";
   spinner.style.display="block";
   successIcon.style.display="none";
 
+  // Upload arquivos para Cloudinary
+  uploadArquivosCloudinary().then(function(linksArquivos){
+    if(linksArquivos){
+      params_assessoria.checklist += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      params_corretor.checklist   += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      // Montar HTML com botões clicáveis para cada arquivo
+      var linksHtml = "<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">";
+      linksHtml += "<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📎 Arquivos anexados</p>";
+      linksArquivos.split("\n").forEach(function(linha){
+        if(!linha.trim()) return;
+        var partes = linha.split(" → ");
+        var nome = partes[0] || "";
+        var url  = partes[1] || "";
+        if(url && url !== "(erro no upload)"){
+          // Adicionar fl_attachment para forçar download direto
+          linksHtml += "<div style=\"margin-bottom:8px\">";
+          linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
+          linksHtml += "</div>";
+        } else {
+          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload</p>";
+        }
+      });
+      linksHtml += "</div>";
+      params_assessoria.checklist_html += linksHtml;
+      params_corretor.checklist_html   += linksHtml;
+    }
+    sendingText.textContent="Enviando e-mail...";
+
   // Enviar para assessoria
+  console.log("Enviando para template:", TEMPLATE_ASSESSORIA, "service:", EMAILJS_SERVICE_ID);
   emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_ASSESSORIA, params_assessoria)
     .then(function(){
       // Enviar cópia para corretor
@@ -733,7 +1069,8 @@ function confirmarEnvio(){
         renderDocs();
         // Limpar obs
         document.getElementById("e-obs").value="";
-        alert("✅ Processo enviado!\n\nA assessoria foi notificada e você receberá uma cópia no e-mail "+cor.email);
+        var nc=document.getElementById("notas-corretor");if(nc)nc.value="";
+        alert("✅ Processo enviado!\n\nEm breve entraremos em contato para informar o andamento do processo.");
       },2000);
     })
     .catch(function(err){
@@ -742,6 +1079,7 @@ function confirmarEnvio(){
       document.getElementById("btn-confirm").disabled=false;
       alert("Erro ao enviar. Verifique sua conexão e tente novamente.\n\n"+JSON.stringify(err));
     });
+  }); // fim uploadArquivosCloudinary
 }
 
 // ─── SEGUROS UNIMED ───────────────────────────────────────────────────────────
@@ -752,11 +1090,16 @@ function renderUnimed(){
     {n:3,t:"Campo 'Vinculado a Assessoria e Plataforma'",d:"Selecione sempre NÃO.",tag:"tag-a",tagT:"Atenção obrigatória"},
     {n:4,t:"Acompanhe pendências pelo site",d:"Prazo: até 10 dias úteis.",tag:"tag-p",tagT:"Até 10 dias úteis"},
     {n:5,t:"Receba o código por e-mail",d:"Após aprovação, código enviado ao corretor.",tag:"tag-c",tagT:"Código ao corretor"},
-    {n:6,t:"Envie o código para a Affinity",d:"assessoria@affinitycorretora.com.br",tag:"tag-a",tagT:"Etapa obrigatória"}
+    {n:6,t:"Envie o código para a Affinity",d:"Quando o código estiver gerado, envie para assessoria@affinitycorretora.com.br com as informações abaixo.",tag:"tag-a",tagT:"Etapa obrigatória"}
   ];
+  var infoNovo="<div style=\"font-size:11px;font-weight:700;color:var(--purple);margin:10px 0 6px\">📋 Informações para enviar junto ao código (Novo cadastro)</div>"
+    +"<div style=\"background:#f9fafb;border-radius:8px;padding:10px 12px;font-size:11px;color:#333;line-height:2;border:1px solid var(--purple-light)\">CÓDIGO GERADO:<br>RAZÃO SOCIAL CO-CORRETORA:<br>E-MAIL:<br>CNPJ:<br>NOME E CPF DE TODOS OS CORRETORES A SEREM CADASTRADOS<br>NOME E CPF DO USUÁRIO PRINCIPAL<br>ID USUÁRIO:<br>CPF:<br>TELEFONE PARA CONTATO:</div>";
+  var infoTransf="<div style=\"font-size:11px;font-weight:700;color:#c62828;margin:10px 0 6px\">🔄 Quando for transferência — informar no corpo do e-mail e colocar em cópia o responsável pela co-corretora:</div>"
+    +"<div style=\"background:#fff3f3;border-radius:8px;padding:10px 12px;font-size:11px;color:#333;line-height:2;border:1px solid rgba(198,40,40,.2)\">CÓDIGO CO-CORRETORA:<br>RAZÃO SOCIAL CO-CORRETORA:<br>E-MAIL:<br>CNPJ:<br>NOME DO USUÁRIO:<br>ID USUÁRIO:<br>CPF:<br>TELEFONE PARA CONTATO:<br><br><strong>Carta de Solicitação de Transferência</strong> — em papel timbrado, documento digitado e, se possível, carimbo da empresa.</div>";
   var h="<div class=\"op-label\"><span class=\"op-badge-pill\">Seguros Unimed</span><span class=\"op-title\">Passo a passo</span></div>";
   h+="<div class=\"steps-card\"><div class=\"steps-head\"><i class=\"ti ti-list-check\"></i>Fluxo de cadastro</div>";
   steps.forEach(function(s){h+="<div class=\"step-item\"><div class=\"step-num\">"+s.n+"</div><div class=\"step-body\"><div class=\"step-title\">"+s.t+"</div><div class=\"step-desc\">"+s.d+"</div><span class=\"step-tag "+s.tag+"\">"+s.tagT+"</span>"+(s.link?"<br><a class=\"btn-site\" href=\""+s.link+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar site</a>":"")+"</div></div>";});
+  h+=infoNovo+infoTransf;
   h+="</div><div class=\"com-card\"><div class=\"com-head\"><i class=\"ti ti-speakerphone\"></i>Comunicado interno</div>";
   h+="<div class=\"ai ai-gold\"><i class=\"ti ti-chart-bar\"></i><div><div style=\"font-size:11px;font-weight:700;color:var(--gold-dark)\">Comissão</div><div class=\"cv\">300% <span>agenciamento</span> + 2% <span>vitalício</span></div></div></div>";
   h+="<div class=\"ai ai-red\"><i class=\"ti ti-alert-triangle\"></i><div><strong>\"Vinculado a Assessoria e Plataforma\"</strong> → sempre <strong>NÃO</strong>.</div></div>";
@@ -768,10 +1111,17 @@ function renderUnimed(){
 // ─── FORMULÁRIOS ──────────────────────────────────────────────────────────────
 function ffIn(id,label,ph,type){type=type||"text";return "<div class=\"ff\"><label>"+label+"</label><input type=\""+type+"\" id=\""+id+"\" placeholder=\""+ph+"\"></div>";}
 
+function ffSel(id,label,opts){
+  var h="<div class=\"cf\"><label class=\"cl\">"+label+"</label><select id=\""+id+"\" class=\"ci\">";
+  h+="<option value=\"\">Selecione...</option>";
+  opts.forEach(function(o){h+="<option value=\""+o+"\">"+o+"</option>";});
+  h+="</select></div>";
+  return h;
+}
 function renderFormAmil(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados para Amil</div>";
   h+="<div class=\"fgt\">Corretora</div>"+ffIn("am_razao","Razão social","");
-  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+ffIn("am_aliq","Alíquota *","Ex: 2%")+ffSel("am_iss","ISS retido por *",["Amil","Corretora"])+"</div>";
   h+="<div class=\"fgt\">Responsável / Sócio administrador</div>"+ffIn("am_resp_nome","Nome completo","");
   h+="<div class=\"fg2\">"+ffIn("am_resp_cpf","CPF","000.000.000-00")+ffIn("am_resp_rg","RG","")+"</div>";
   h+=ffIn("am_resp_email","E-mail nominal","","email")+ffIn("am_resp_tel","Telefone","(00) 00000-0000");
@@ -782,10 +1132,10 @@ function renderFormAmil(){
   h+="<div class=\"copy-ok\" id=\"cp-amil\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
   return h;
 }
-window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_aliq","am_iss","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
 window.copiar_amil=function(){
   var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
-  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
+  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+" Alíquota: "+v("am_aliq")+" ISS: "+v("am_iss")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
   navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-amil");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
 };
 
@@ -809,7 +1159,7 @@ window.copiar_assim=function(){
 
 function renderFormLeve(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Formulário de Particionamento — Leve Saúde</div>";
-  h+="<div class=\"fgt\">Opção</div><div class=\"opcao-row\"><button class=\"opcao-btn sel\" data-opsel=\"1\">Opção 1 (recomendada)</button><button class=\"opcao-btn\" data-opsel=\"2\">Opção 2</button></div>";
+  h+="<div class=\"fgt\">Opção</div><div class=\"opcao-row\"><button class=\"opcao-btn sel\" data-opsel=\"1\">Opção 1 (recomendada)</button></div>";
   h+="<div id=\"tabela-part\"></div>";
   h+="<div class=\"fgt\">Corretora</div>"+ffIn("cor_razao","Razão social","");
   h+="<div class=\"fg2\">"+ffIn("cor_cnpj","CNPJ","")+ffIn("cor_banco","Banco","")+ffIn("cor_ag","Agência","0000")+ffIn("cor_cc","Conta corrente","")+"</div>";
