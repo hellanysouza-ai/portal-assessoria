@@ -370,6 +370,9 @@ async function uploadArquivosCloudinary(){
           reader.onerror = function(){ reject(new Error("Erro ao ler arquivo")); };
           reader.readAsDataURL(f);
         });
+        // Criar novo arquivo com nome seguro (sem barras ou caracteres inválidos)
+        var safeName = f.name.replace(/[/\\:*?"<>|]/g, "_");
+        var safeFile = new File([f], safeName, {type: f.type});
         var fd = new FormData();
         fd.append("file", base64);
         fd.append("upload_preset", CLOUDINARY_PRESET);
@@ -1022,13 +1025,12 @@ function confirmarEnvio(){
         var partes = linha.split(" → ");
         var nome = partes[0] || "";
         var url  = partes[1] || "";
-        var isValidUrl = url && url.indexOf("http") === 0;
-        if(isValidUrl){
+        if(url && url !== "(erro no upload)"){
           linksHtml += "<div style=\"margin-bottom:8px\">";
           linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
           linksHtml += "</div>";
         } else {
-          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload: "+url+"</p>";
+          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload</p>";
         }
       });
       linksHtml += "</div>";
