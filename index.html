@@ -574,7 +574,8 @@ var dados={
      docs:[
       {t:"Cartão do CNPJ — CNAE compatível: 6622-3/00 (Corretores e agentes de seguros, de planos de previdência complementar e de saúde)"},
       {t:"Conta bancária para depósito de comissões — ex.: cheque da empresa, cartão bancário (frente e verso) ou extrato"},
-      {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"}
+      {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"},
+      {t:"Documento do Contador — informando o regime tributário da empresa. Se Simples Nacional, anexar PGDAS mais atual",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"}
     ]},
   ]},
   seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[]},
@@ -736,7 +737,8 @@ function renderDocs(){
       h+="<ul class=\"doc-list\">";
       cat.docs.forEach(function(doc,i){
         id=cat.id+"_"+i;
-        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+"</div>":"";
+        var extLinkE=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
+        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+extLinkE+"</div>":(extLinkE?"<div style=\"margin-top:5px\">"+extLinkE+"</div>":"");
         h+="<li class=\"doc-item\">";
         h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
         h+="<div class=\"doc-chk "+(checked[id]?"on":"")+" \" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
