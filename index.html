@@ -387,8 +387,10 @@ async function uploadArquivosCloudinary(){
           var url = data.secure_url;
           if(isPdfOrZip && !url.includes("fl_attachment")){
             url = url.replace("/upload/", "/upload/fl_attachment/");
-            if(!url.toLowerCase().endsWith("."+ext)){ url = url + "." + ext; }
           }
+          // Garantir que a URL termine com a extensão correta do arquivo
+          // (o Cloudinary não recebe o nome do arquivo pois enviamos em base64, então não adiciona a extensão sozinho)
+          if(!url.toLowerCase().endsWith("."+ext)){ url = url + "." + ext; }
           links.push(label+" → "+url);
         } else {
           links.push(label+" → (erro: sem URL)");
