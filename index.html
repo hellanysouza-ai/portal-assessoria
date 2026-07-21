@@ -361,6 +361,11 @@ async function uploadArquivosCloudinary(){
       var f = files[j];
       var ext = f.name.split(".").pop().toLowerCase();
       var isPdfOrZip = (ext==="pdf" || ext==="zip");
+      var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+      // image/upload só aceita imagem, pdf e zip (Cloudinary consegue tratá-los como "imagem");
+      // docx/xlsx e outros formatos precisam ir por raw/upload
+      var useImageEndpoint = isPdfOrZip || imgExts.indexOf(ext)>=0;
+      var resourceType = useImageEndpoint ? "image" : "raw";
       try{
         // Converter para base64 igual ao formulário de boletos
         var base64 = await new Promise(function(resolve, reject){
@@ -375,9 +380,7 @@ async function uploadArquivosCloudinary(){
         var fd = new FormData();
         fd.append("file", base64);
         fd.append("upload_preset", CLOUDINARY_PRESET);
-        // Usar sempre image/upload — Cloudinary aceita PDF/ZIP via image endpoint com fl_attachment,
-        // sem depender da liberação de "PDF and ZIP files delivery" na conta
-        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/image/upload",{method:"POST",body:fd});
+        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
         if(!r.ok){ var d=await r.json(); throw new Error("Cloudinary "+r.status+": "+(d.error&&d.error.message||r.statusText)); }
         var data = await r.json();
         if(data.secure_url){
