@@ -150,6 +150,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
 .form-card-head i{color:var(--gold)}
 .fgt{font-size:10px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;padding-bottom:4px;border-bottom:.5px solid var(--gold-bg)}
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .ff{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
 .ff label{font-size:11px;font-weight:700;color:var(--purple)}
 .ff input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;transition:border .15s}
@@ -218,6 +219,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
   .form-actions{flex-direction:row;justify-content:stretch}
   .btn-clear,.btn-copy{flex:1;justify-content:center}
   .fg2{grid-template-columns:1fr}
+  .fg3{grid-template-columns:1fr}
   .opcao-row{flex-direction:column;gap:6px}
 }
 </style>
@@ -924,7 +926,7 @@ function validarDocumentos(){
 var CAMPOS_FORM={
   assim:[["as_razao","Razão social"],["as_cnpj","CNPJ"],["as_tel","Telefone"],["as_rl_nome","Nome do representante legal"],["as_rl_email","E-mail do representante legal"],["as_test_nome","Nome da testemunha"],["as_test_email","E-mail da testemunha"],["as_site_nome","Nome — site Assim"],["as_site_email","E-mail — site Assim"],["as_plat_nome","Nome — plataforma online"],["as_plat_email","E-mail — plataforma online"]],
   leve:[["cor_razao","Razão social da corretora"],["cor_cnpj","CNPJ da corretora"],["cor_banco","Banco"],["cor_ag","Agência"],["cor_cc","Conta corrente"],["form_cidade","Cidade"],["form_data","Data"]],
-  "medsênior":[["rl_nome","Nome do representante legal"],["rl_email","E-mail do representante legal"],["rl_cpf","CPF do representante legal"],["rl_nasc","Nascimento do representante legal"],["test_nome","Nome da testemunha"],["test_email","E-mail da testemunha"],["test_cpf","CPF da testemunha"],["test_nasc","Nascimento da testemunha"],["nf_nome","Nome — resp. comissão/NF"],["nf_email","E-mail — resp. comissão/NF"],["nf_cpf","CPF — resp. comissão/NF"],["nf_nasc","Nascimento — resp. comissão/NF"],["tel_fixo","Telefone fixo"]],
+  "medsênior":[["med_conc_razao","Razão social da concessionária"],["med_conc_codigo","Código da concessionária"],["med_conc_cnpj","CNPJ da concessionária"],["med_conc_banco","Banco"],["med_conc_ag","Agência"],["med_conc_cc","Conta corrente"],["med_conc_tel","Telefone"],["med_conc_email","E-mail"],["rl_nome","Nome do representante legal"],["rl_email","E-mail do representante legal"],["rl_cpf","CPF do representante legal"],["rl_nasc","Nascimento do representante legal"],["test_nome","Nome da testemunha"],["test_email","E-mail da testemunha"],["test_cpf","CPF da testemunha"],["test_nasc","Nascimento da testemunha"],["nf_nome","Nome — resp. comissão/NF"],["nf_email","E-mail — resp. comissão/NF"],["nf_cpf","CPF — resp. comissão/NF"],["nf_nasc","Nascimento — resp. comissão/NF"],["tel_fixo","Telefone fixo"]],
   select:[["sel_nome","Nome do responsável"],["sel_cpf","CPF do responsável"],["sel_tel","Telefone do responsável"],["sel_email","E-mail do responsável"]]
 };
 var CAMPOS_FORM_AMIL_FIXOS=[["am_razao","Razão social"],["am_cnpj","CNPJ"],["am_ccm","CCM / Inscrição municipal"],["am_banco","Banco"],["am_ag","Agência"],["am_cc","Conta corrente"],["am_seg","Segmento"],["am_aliq","Alíquota"],["am_iss","ISS retido por"],["am_test_nome","Nome da testemunha"],["am_test_cpf","CPF da testemunha"],["am_test_email","E-mail da testemunha"],["am_local","Local"],["am_data","Data"]];
@@ -1125,10 +1127,19 @@ function confirmarEnvio(){
       +mkFRow("Data",v("form_data"))
       +"</table></div>";
   } else if(d.form==="medsênior"){
-    formTxt="DADOS MEDSÊNIOR\nRepresentante: "+v("rl_nome")+" | CPF: "+v("rl_cpf")+" | Nasc: "+v("rl_nasc")+" | E-mail: "+v("rl_email")+"\nTestemunha: "+v("test_nome")+" | CPF: "+v("test_cpf")+" | Nasc: "+v("test_nasc")+" | E-mail: "+v("test_email")+"\nResp. NF: "+v("nf_nome")+" | CPF: "+v("nf_cpf")+" | Nasc: "+v("nf_nasc")+" | E-mail: "+v("nf_email")+"\nTelefone: "+v("tel_fixo");
+    formTxt="DADOS MEDSÊNIOR\nConcessionária: "+v("med_conc_razao")+" | Código: "+v("med_conc_codigo")+" | CNPJ: "+v("med_conc_cnpj")+"\nBanco: "+v("med_conc_banco")+" | Agência: "+v("med_conc_ag")+" | Conta: "+v("med_conc_cc")+"\nTelefone: "+v("med_conc_tel")+" | E-mail: "+v("med_conc_email")+"\nRepresentante: "+v("rl_nome")+" | CPF: "+v("rl_cpf")+" | Nasc: "+v("rl_nasc")+" | E-mail: "+v("rl_email")+"\nTestemunha: "+v("test_nome")+" | CPF: "+v("test_cpf")+" | Nasc: "+v("test_nasc")+" | E-mail: "+v("test_email")+"\nResp. NF: "+v("nf_nome")+" | CPF: "+v("nf_cpf")+" | Nasc: "+v("nf_nasc")+" | E-mail: "+v("nf_email")+"\nTelefone: "+v("tel_fixo");
     formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
       +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados — MedSênior</p>"
       +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Concessionária</td></tr>"
+      +mkFRow("Razão social",v("med_conc_razao"))
+      +mkFRow("Código",v("med_conc_codigo"))
+      +mkFRow("CNPJ",v("med_conc_cnpj"))
+      +mkFRow("Banco",v("med_conc_banco"))
+      +mkFRow("Agência",v("med_conc_ag"))
+      +mkFRow("Conta corrente",v("med_conc_cc"))
+      +mkFRow("Telefone",v("med_conc_tel"))
+      +mkFRow("E-mail",v("med_conc_email"))
       +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal</td></tr>"
       +mkFRow("Nome",v("rl_nome"))
       +mkFRow("CPF",v("rl_cpf"))
@@ -1393,6 +1404,10 @@ window.copiar_leve=function(){
 
 function renderFormMed(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados — MedSênior</div>";
+  h+="<div class=\"fgt\">Concessionária</div>"+ffIn("med_conc_razao","Razão social da concessionária","");
+  h+="<div class=\"fg2\">"+ffIn("med_conc_codigo","Código da concessionária","")+ffIn("med_conc_cnpj","CNPJ","")+"</div>";
+  h+="<div class=\"fg3\">"+ffIn("med_conc_banco","Banco","")+ffIn("med_conc_ag","Agência","")+ffIn("med_conc_cc","Conta corrente","")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("med_conc_tel","Telefone","")+ffIn("med_conc_email","E-mail","","email")+"</div>";
   h+="<div class=\"fgt\">Representante legal</div>"+ffIn("rl_nome","Nome","");
   h+="<div class=\"fg2\">"+ffIn("rl_email","E-mail","","email")+ffIn("rl_cpf","CPF","")+ffIn("rl_nasc","Nascimento","DD/MM/AAAA")+"</div>";
   h+="<div class=\"fgt\">Testemunha</div>"+ffIn("test_nome","Nome","");
@@ -1404,10 +1419,10 @@ function renderFormMed(){
   h+="<div class=\"copy-ok\" id=\"cp-med\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
   return h;
 }
-window.limpar_med=function(){["rl_nome","rl_email","rl_cpf","rl_nasc","test_nome","test_email","test_cpf","test_nasc","nf_nome","nf_email","nf_cpf","nf_nasc","tel_fixo"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.limpar_med=function(){["med_conc_razao","med_conc_codigo","med_conc_cnpj","med_conc_banco","med_conc_ag","med_conc_cc","med_conc_tel","med_conc_email","rl_nome","rl_email","rl_cpf","rl_nasc","test_nome","test_email","test_cpf","test_nasc","nf_nome","nf_email","nf_cpf","nf_nasc","tel_fixo"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
 window.copiar_med=function(){
   var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
-  var txt="DADOS MEDSÊNIOR\nRepresentante: "+v("rl_nome")+" "+v("rl_email")+" CPF: "+v("rl_cpf")+" Nasc: "+v("rl_nasc")+"\nTestemunha: "+v("test_nome")+" "+v("test_email")+" CPF: "+v("test_cpf")+" Nasc: "+v("test_nasc")+"\nResp. NF: "+v("nf_nome")+" "+v("nf_email")+" CPF: "+v("nf_cpf")+" Nasc: "+v("nf_nasc")+"\nTel: "+v("tel_fixo");
+  var txt="DADOS MEDSÊNIOR\nConcessionária: "+v("med_conc_razao")+" | Código: "+v("med_conc_codigo")+" | CNPJ: "+v("med_conc_cnpj")+"\nBanco: "+v("med_conc_banco")+" Ag: "+v("med_conc_ag")+" CC: "+v("med_conc_cc")+"\nTel: "+v("med_conc_tel")+" E-mail: "+v("med_conc_email")+"\nRepresentante: "+v("rl_nome")+" "+v("rl_email")+" CPF: "+v("rl_cpf")+" Nasc: "+v("rl_nasc")+"\nTestemunha: "+v("test_nome")+" "+v("test_email")+" CPF: "+v("test_cpf")+" Nasc: "+v("test_nasc")+"\nResp. NF: "+v("nf_nome")+" "+v("nf_email")+" CPF: "+v("nf_cpf")+" Nasc: "+v("nf_nasc")+"\nTel: "+v("tel_fixo");
   navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-med");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
 };
 
