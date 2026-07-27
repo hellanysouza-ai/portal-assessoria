@@ -96,6 +96,9 @@ body{background:#f4f4f6;min-height:100vh}
 .up-lbl{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--purple);cursor:pointer;padding:4px 11px;border-radius:6px;border:1.5px dashed var(--purple);background:#fff}
 .up-lbl:hover{background:var(--purple-bg)}
 .up-lbl input{display:none}
+.doc-campo-input{border:1.5px solid #ddd;border-radius:6px;padding:6px 10px;font-size:12px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;max-width:340px;transition:border .15s}
+.doc-campo-input:focus{outline:none;border-color:var(--gold)}
+.dl-note{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--gold-dark);font-style:italic;margin:3px 0 2px;padding-left:1px}
 .f-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:var(--gold-dark)}
 .f-rm{cursor:pointer;color:var(--gold);margin-left:2px}
 .proc-btn{background:#f0ebf5;border:1.5px solid #d0c0dc;color:var(--purple);border-radius:20px;padding:6px 14px;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s}
@@ -398,9 +401,10 @@ async function uploadArquivosCloudinary(){
           if(isPdfOrZip && !url.includes("fl_attachment")){
             url = url.replace("/upload/", "/upload/fl_attachment/");
           }
-          // Garantir que a URL termine com a extensão correta do arquivo
-          // (o Cloudinary não recebe o nome do arquivo pois enviamos em base64, então não adiciona a extensão sozinho)
-          if(!url.toLowerCase().endsWith("."+ext)){ url = url + "." + ext; }
+          // Garantir extensão correta somente para RAW (docx/xlsx etc — Cloudinary não detecta sozinho, pois enviamos via base64 sem nome de arquivo real).
+          // Para image/pdf/zip o Cloudinary já detecta o formato real do conteúdo e devolve a extensão certa —
+          // forçar aqui causava duplicidade (ex: .jpg.jpeg) quando o nome original não batia com o formato detectado.
+          if(resourceType==="raw" && !url.toLowerCase().endsWith("."+ext)){ url = url + "." + ext; }
           links.push(label+" → "+url);
         } else {
           links.push(label+" → (erro: sem URL)");
@@ -495,8 +499,8 @@ var dados={
       {t:"Carta Anticorrupção — assinada e rubricada em todas as páginas",dl:"amil_anticorrupcao"},
       {t:"Termo de Vinculação — apenas preenchido (assinatura digital posterior)",dl:"amil_vinculacao"},
       {t:"Formulário cadastral — preenchido nas duas páginas",dl:"amil_formulario"},
-      {t:"E-mail e telefone nominais dos sócios"},
-      {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)"}
+      {t:"E-mail e telefone nominais dos sócios",campo:true},
+      {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)",campo:true}
     ]},
     {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:true,info:null,
      warn:"Quando a assessoria atual não retorna: o corretor preenche o Termo de Desvinculação, assina e nos envia junto com e-mail à plataforma atual. O e-mail substitui a assinatura após 30 dias.",
@@ -613,7 +617,7 @@ var dados={
   ]}
 };
 
-var checked={},arquivos={},filtroDoc="",opcaoSel=1,processoSel="";
+var checked={},arquivos={},textos={},filtroDoc="",opcaoSel=1,processoSel="";
 
 // ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
 document.querySelectorAll(".nav-tab").forEach(function(tab){
@@ -649,25 +653,90 @@ document.addEventListener("click",function(e){
   if(clr&&window["limpar_"+clr.dataset.clear])window["limpar_"+clr.dataset.clear]();
   var cpy=e.target.closest("[data-copy]");
   if(cpy&&window["copiar_"+cpy.dataset.copy])window["copiar_"+cpy.dataset.copy]();
+  var addSocio=e.target.closest("#btn-add-socio");
+  if(addSocio){
+    var cont=document.getElementById("am-socios");
+    if(cont){cont.insertAdjacentHTML("beforeend",socioBlockHTML(amSocioNextIdx));amSocioNextIdx++;atualizarBotoesRemoverSocio();}
+    return;
+  }
+  var rmSocio=e.target.closest("[data-rm-socio]");
+  if(rmSocio){
+    var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+    if(blocks.length<=1)return;
+    var idx=rmSocio.dataset.rmSocio;
+    var block=document.querySelector("#am-socios [data-socio-idx=\""+idx+"\"]");
+    if(block)block.remove();
+    atualizarBotoesRemoverSocio();
+    return;
+  }
+});
+document.addEventListener("input",function(e){
+  var campo=e.target.closest("[data-campo]");
+  if(!campo)return;
+  var id=campo.dataset.campo;
+  textos[id]=campo.value;
+  var on=campo.value.trim().length>0;
+  if(on!==!!checked[id]){checked[id]=on;var chkEl=document.getElementById("chk_"+id);if(chkEl)chkEl.classList.toggle("on",on);atualizarProg();}
 });
 document.addEventListener("change",function(e){
   var inp=e.target.closest("[data-upload]");
   if(!inp||!inp.files.length)return;
   var id=inp.dataset.upload;
   if(!arquivos[id])arquivos[id]=[];
-  Array.prototype.forEach.call(inp.files,function(f){arquivos[id].push(f);});
+  var rejeitados=[],avisos=[];
+  Array.prototype.forEach.call(inp.files,function(f){
+    if(f.size===0){rejeitados.push(f.name+" — arquivo vazio ou corrompido, tente anexar novamente");return;}
+    if(f.size>25*1024*1024){rejeitados.push(f.name+" — maior que 25MB, verifique o arquivo");return;}
+    var ext=f.name.split(".").pop().toLowerCase();
+    if(ext==="heic"||ext==="heif"){avisos.push(f.name+" — formato HEIC pode não abrir em todos os computadores. Se possível, envie como JPG.");}
+    arquivos[id].push(f);
+  });
+  if(rejeitados.length)alert("Não foi possível anexar:\n"+rejeitados.join("\n"));
+  if(avisos.length)alert("Atenção:\n"+avisos.join("\n"));
   renderBadges(id);inp.value="";
   // Auto-tick: marcar o checkbox ao anexar arquivo
-  if(!checked[id]){checked[id]=true;var chkEl=document.getElementById("chk_"+id);if(chkEl){chkEl.classList.add("on");}atualizarProg();}
+  if((arquivos[id]||[]).length && !checked[id]){checked[id]=true;var chkEl=document.getElementById("chk_"+id);if(chkEl){chkEl.classList.add("on");}atualizarProg();}
 });
 
 function renderBadges(id){
   var c=document.getElementById("bdg_"+id);if(!c)return;
   c.innerHTML=(arquivos[id]||[]).map(function(f,i){
-    return "<span class=\"f-badge\"><i class=\"ti ti-paperclip\" style=\"font-size:11px\"></i><span>"+f.name+"</span><span class=\"f-rm\" data-rm=\""+id+"|"+i+"\">✕</span></span> ";
+    var ic=iconArquivo(f.name);
+    return "<span class=\"f-badge\"><i class=\"ti "+ic.ic+"\" style=\"font-size:11px;color:"+ic.cor+"\"></i><span>"+f.name+"</span><span class=\"f-rm\" data-rm=\""+id+"|"+i+"\">✕</span></span> ";
   }).join("");
+  var dicon=document.getElementById("dicon_"+id);
+  if(dicon){
+    var arq=arquivos[id];
+    if(arq&&arq.length>0){var ic2=iconArquivo(arq[0].name);dicon.className="ti "+ic2.ic+" doc-icon";dicon.style.color=ic2.cor;}
+    else{dicon.className="ti ti-paperclip doc-icon";dicon.style.color="#999";}
+  }
 }
 
+function iconArquivo(nome){
+  var ext=(nome.split(".").pop()||"").toLowerCase();
+  var map={
+    pdf:{ic:"ti-file-type-pdf",cor:"#c62828"},
+    doc:{ic:"ti-file-type-doc",cor:"#2b579a"},docx:{ic:"ti-file-type-doc",cor:"#2b579a"},
+    xls:{ic:"ti-file-type-xls",cor:"#1a7c3e"},xlsx:{ic:"ti-file-type-xls",cor:"#1a7c3e"},
+    zip:{ic:"ti-file-zip",cor:"#8a6d3b"},
+    jpg:{ic:"ti-photo",cor:"#8e44ad"},jpeg:{ic:"ti-photo",cor:"#8e44ad"},png:{ic:"ti-photo",cor:"#8e44ad"},
+    heic:{ic:"ti-photo",cor:"#8e44ad"},heif:{ic:"ti-photo",cor:"#8e44ad"},gif:{ic:"ti-photo",cor:"#8e44ad"},webp:{ic:"ti-photo",cor:"#8e44ad"}
+  };
+  return map[ext]||{ic:"ti-file",cor:"#888"};
+}
+function mkDocIcon(doc,id){
+  if(doc.campo)return "<i class=\"ti ti-pencil doc-icon\" id=\"dicon_"+id+"\" style=\"color:var(--gold-dark)\"></i>";
+  var arq=arquivos[id];
+  if(arq&&arq.length>0){var ic=iconArquivo(arq[0].name);return "<i class=\"ti "+ic.ic+" doc-icon\" id=\"dicon_"+id+"\" style=\"color:"+ic.cor+"\"></i>";}
+  return "<i class=\"ti ti-paperclip doc-icon\" id=\"dicon_"+id+"\" style=\"color:#999\"></i>";
+}
+function mkDocActions(doc,id){
+  if(doc.campo){
+    var val=textos[id]?textos[id].replace(/"/g,"&quot;"):"";
+    return "<div class=\"doc-actions\"><input type=\"text\" class=\"doc-campo-input\" data-campo=\""+id+"\" placeholder=\"Digite aqui...\" value=\""+val+"\"></div>";
+  }
+  return "<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+}
 function mkDl(key,key2){
   var f=FILES[key];if(!f)return "";
   var ic={"dl-pdf":"ti-file-type-pdf","dl-word":"ti-file-type-doc","dl-excel":"ti-file-type-xls"};
@@ -730,12 +799,12 @@ function renderDocs(){
     cat.docs.forEach(function(doc,i){
       var id=cat.id+"_"+i;
       var extLink=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
-      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+extLink+"</div>":(extLink?"<div style=\"margin-top:5px\">"+extLink+"</div>":"");
+      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center\">"+mkDl(doc.dl,doc.dl2)+extLink+"</div><div class=\"dl-note\"><i class=\"ti ti-info-circle\"></i>Baixe, preencha/assine e anexe abaixo</div>":(extLink?"<div style=\"margin-top:5px\">"+extLink+"</div>":"");
       h+="<li class=\"doc-item\" id=\"doc_"+id+"\">";
-      h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
+      h+="<div class=\"doc-row\">"+mkDocIcon(doc,id)+"<span class=\"doc-name\">"+doc.t+"</span>";
       h+="<div class=\"doc-chk "+(checked[id]?"on":"")+"\" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
       h+=dlH;
-      h+="<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+      h+=mkDocActions(doc,id);
       h+="</li>";
     });
     h+="</ul>";
@@ -759,12 +828,12 @@ function renderDocs(){
       cat.docs.forEach(function(doc,i){
         id=cat.id+"_"+i;
         var extLinkE=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
-        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap\">"+mkDl(doc.dl,doc.dl2)+extLinkE+"</div>":(extLinkE?"<div style=\"margin-top:5px\">"+extLinkE+"</div>":"");
+        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center\">"+mkDl(doc.dl,doc.dl2)+extLinkE+"</div><div class=\"dl-note\"><i class=\"ti ti-info-circle\"></i>Baixe, preencha/assine e anexe abaixo</div>":(extLinkE?"<div style=\"margin-top:5px\">"+extLinkE+"</div>":"");
         h+="<li class=\"doc-item\" id=\"doc_"+id+"\">";
-        h+="<div class=\"doc-row\"><i class=\"ti ti-file-text doc-icon\"></i><span class=\"doc-name\">"+doc.t+"</span>";
+        h+="<div class=\"doc-row\">"+mkDocIcon(doc,id)+"<span class=\"doc-name\">"+doc.t+"</span>";
         h+="<div class=\"doc-chk "+(checked[id]?"on":"")+" \" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
         h+=dlH;
-        h+="<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+        h+=mkDocActions(doc,id);
         h+="</li>";
       });
       h+="</ul>";
@@ -777,6 +846,7 @@ function renderDocs(){
   h+=renderForm(d.form);
   cont.innerHTML=h;
   if(d.form==="leve")renderTabPart();
+  if(d.form==="amil")atualizarBotoesRemoverSocio();
   atualizarProg();
 }
 
@@ -839,7 +909,8 @@ function validarDocumentos(){
     if(processoSel==="transf" && isNovo   && !isTransf) return;
     cat.docs.forEach(function(doc,i){
       var id=cat.id+"_"+i;
-      if(!arquivos[id]||arquivos[id].length===0){
+      var preenchido = doc.campo ? (textos[id]&&textos[id].trim().length>0) : (arquivos[id]&&arquivos[id].length>0);
+      if(!preenchido){
         missing.push({cat:cat.titulo,doc:doc.t,id:id});
         var li=document.getElementById("doc_"+id);
         if(li)li.classList.add("missing");
@@ -851,24 +922,38 @@ function validarDocumentos(){
 
 // ─── VALIDAÇÃO DOS FORMULÁRIOS ESPECÍFICOS DE CADA OPERADORA ─────────────────
 var CAMPOS_FORM={
-  amil:[["am_razao","Razão social"],["am_cnpj","CNPJ"],["am_ccm","CCM / Inscrição municipal"],["am_banco","Banco"],["am_ag","Agência"],["am_cc","Conta corrente"],["am_seg","Segmento"],["am_aliq","Alíquota"],["am_iss","ISS retido por"],["am_resp_nome","Nome do responsável"],["am_resp_cpf","CPF do responsável"],["am_resp_rg","RG do responsável"],["am_resp_email","E-mail do responsável"],["am_resp_tel","Telefone do responsável"],["am_test_nome","Nome da testemunha"],["am_test_cpf","CPF da testemunha"],["am_test_email","E-mail da testemunha"],["am_local","Local"],["am_data","Data"]],
   assim:[["as_razao","Razão social"],["as_cnpj","CNPJ"],["as_tel","Telefone"],["as_rl_nome","Nome do representante legal"],["as_rl_email","E-mail do representante legal"],["as_test_nome","Nome da testemunha"],["as_test_email","E-mail da testemunha"],["as_site_nome","Nome — site Assim"],["as_site_email","E-mail — site Assim"],["as_plat_nome","Nome — plataforma online"],["as_plat_email","E-mail — plataforma online"]],
   leve:[["cor_razao","Razão social da corretora"],["cor_cnpj","CNPJ da corretora"],["cor_banco","Banco"],["cor_ag","Agência"],["cor_cc","Conta corrente"],["form_cidade","Cidade"],["form_data","Data"]],
   "medsênior":[["rl_nome","Nome do representante legal"],["rl_email","E-mail do representante legal"],["rl_cpf","CPF do representante legal"],["rl_nasc","Nascimento do representante legal"],["test_nome","Nome da testemunha"],["test_email","E-mail da testemunha"],["test_cpf","CPF da testemunha"],["test_nasc","Nascimento da testemunha"],["nf_nome","Nome — resp. comissão/NF"],["nf_email","E-mail — resp. comissão/NF"],["nf_cpf","CPF — resp. comissão/NF"],["nf_nasc","Nascimento — resp. comissão/NF"],["tel_fixo","Telefone fixo"]],
   select:[["sel_nome","Nome do responsável"],["sel_cpf","CPF do responsável"],["sel_tel","Telefone do responsável"],["sel_email","E-mail do responsável"]]
 };
+var CAMPOS_FORM_AMIL_FIXOS=[["am_razao","Razão social"],["am_cnpj","CNPJ"],["am_ccm","CCM / Inscrição municipal"],["am_banco","Banco"],["am_ag","Agência"],["am_cc","Conta corrente"],["am_seg","Segmento"],["am_aliq","Alíquota"],["am_iss","ISS retido por"],["am_test_nome","Nome da testemunha"],["am_test_cpf","CPF da testemunha"],["am_test_email","E-mail da testemunha"],["am_local","Local"],["am_data","Data"]];
 function validarFormularioOperadora(){
   if(!filtroDoc)return{ok:false,missing:[]};
   var d=dados[filtroDoc];
+  var missing=[];
+  var checarCampo=function(id,label){
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(!el.value.trim()){el.classList.add("error");missing.push(label);}
+    else el.classList.remove("error");
+  };
+  if(d.form==="amil"){
+    CAMPOS_FORM_AMIL_FIXOS.forEach(function(c){checarCampo(c[0],c[1]);});
+    var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+    blocks.forEach(function(b,n){
+      var idx=b.dataset.socioIdx,num=n+1;
+      checarCampo("am_resp_nome_"+idx,"Nome do sócio "+num);
+      checarCampo("am_resp_cpf_"+idx,"CPF do sócio "+num);
+      checarCampo("am_resp_rg_"+idx,"RG do sócio "+num);
+      checarCampo("am_resp_email_"+idx,"E-mail do sócio "+num);
+      checarCampo("am_resp_tel_"+idx,"Telefone do sócio "+num);
+    });
+    return{ok:missing.length===0,missing:missing};
+  }
   var campos=CAMPOS_FORM[d.form];
   if(!campos)return{ok:true,missing:[]}; // operadora sem formulário próprio (ex: Hapvida, Unimed)
-  var missing=[];
-  campos.forEach(function(c){
-    var el=document.getElementById(c[0]);
-    if(!el)return;
-    if(!el.value.trim()){el.classList.add("error");missing.push(c[1]);}
-    else el.classList.remove("error");
-  });
+  campos.forEach(function(c){checarCampo(c[0],c[1]);});
   return{ok:missing.length===0,missing:missing};
 }
 
@@ -942,7 +1027,12 @@ function confirmarEnvio(){
       var docsAnexadosHtml = [];
       cat.docs.forEach(function(doc,i){
         var id=cat.id+"_"+i;
-        if(arquivos[id]&&arquivos[id].length>0){
+        if(doc.campo){
+          if(textos[id]&&textos[id].trim()){
+            docsAnexados.push("📝 "+doc.t+": "+textos[id].trim());
+            docsAnexadosHtml.push("<li style='color:#1a7c3e'>📝 <strong>"+doc.t+":</strong> "+textos[id].trim()+"</li>");
+          }
+        } else if(arquivos[id]&&arquivos[id].length>0){
           docsAnexados.push("📎 "+doc.t+" ("+arquivos[id].map(function(f){return f.name;}).join(", ")+")");
           docsAnexadosHtml.push("<li style='color:#1a7c3e'>📎 <strong>"+doc.t+"</strong> — "+arquivos[id].map(function(f){return f.name;}).join(", ")+"</li>");
         } else if(checked[id]){
@@ -968,7 +1058,18 @@ function confirmarEnvio(){
   var formTxt="";
 
   if(d.form==="amil"){
-    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+" | Alíquota: "+v("am_aliq")+" | ISS retido por: "+v("am_iss")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" | CPF: "+v("am_resp_cpf")+" | RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" | Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
+    var sociosTxt="",sociosHtml="";
+    document.querySelectorAll("#am-socios [data-socio-idx]").forEach(function(b,n){
+      var idx=b.dataset.socioIdx,num=n+1;
+      sociosTxt+="\nSócio "+num+": "+v("am_resp_nome_"+idx)+" | CPF: "+v("am_resp_cpf_"+idx)+" | RG: "+v("am_resp_rg_"+idx)+" | E-mail: "+v("am_resp_email_"+idx)+" | Tel: "+v("am_resp_tel_"+idx);
+      sociosHtml+="<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Sócio "+num+"</td></tr>"
+        +mkFRow("Nome completo",v("am_resp_nome_"+idx))
+        +mkFRow("CPF",v("am_resp_cpf_"+idx))
+        +mkFRow("RG",v("am_resp_rg_"+idx))
+        +mkFRow("E-mail nominal",v("am_resp_email_"+idx))
+        +mkFRow("Telefone",v("am_resp_tel_"+idx));
+    });
+    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+" | Alíquota: "+v("am_aliq")+" | ISS retido por: "+v("am_iss")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+sociosTxt+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
     formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
       +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados para Amil</p>"
       +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
@@ -981,12 +1082,7 @@ function confirmarEnvio(){
       +mkFRow("Segmento",v("am_seg"))
       +mkFRow("Alíquota",v("am_aliq"))
       +mkFRow("ISS retido por",v("am_iss"))
-      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável / Sócio administrador</td></tr>"
-      +mkFRow("Nome completo",v("am_resp_nome"))
-      +mkFRow("CPF",v("am_resp_cpf"))
-      +mkFRow("RG",v("am_resp_rg"))
-      +mkFRow("E-mail nominal",v("am_resp_email"))
-      +mkFRow("Telefone",v("am_resp_tel"))
+      +sociosHtml
       +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
       +mkFRow("Nome completo",v("am_test_nome"))
       +mkFRow("CPF",v("am_test_cpf"))
@@ -1202,13 +1298,30 @@ function ffSel(id,label,opts){
   h+="</select></div>";
   return h;
 }
+var amSocioNextIdx=1;
+function socioBlockHTML(i){
+  return "<div class=\"socio-block\" data-socio-idx=\""+i+"\">"
+    +"<div class=\"fgt\" style=\"display:flex;justify-content:space-between;align-items:center\"><span>Sócio</span><button type=\"button\" class=\"btn-rm-socio\" data-rm-socio=\""+i+"\" style=\"background:none;border:none;color:#c62828;font-size:11px;cursor:pointer;font-weight:700\">✕ remover</button></div>"
+    +ffIn("am_resp_nome_"+i,"Nome completo","")
+    +"<div class=\"fg2\">"+ffIn("am_resp_cpf_"+i,"CPF","000.000.000-00")+ffIn("am_resp_rg_"+i,"RG","")+"</div>"
+    +ffIn("am_resp_email_"+i,"E-mail nominal","","email")+ffIn("am_resp_tel_"+i,"Telefone","(00) 00000-0000")
+    +"</div>";
+}
+function atualizarBotoesRemoverSocio(){
+  var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+  blocks.forEach(function(b){
+    var btn=b.querySelector("[data-rm-socio]");
+    if(btn)btn.style.display=blocks.length>1?"inline":"none";
+  });
+}
 function renderFormAmil(){
+  amSocioNextIdx=1;
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados para Amil</div>";
   h+="<div class=\"fgt\">Corretora</div>"+ffIn("am_razao","Razão social","");
   h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+ffIn("am_aliq","Alíquota *","Ex: 2%")+ffSel("am_iss","ISS retido por *",["Amil","Corretora"])+"</div>";
-  h+="<div class=\"fgt\">Responsável / Sócio administrador</div>"+ffIn("am_resp_nome","Nome completo","");
-  h+="<div class=\"fg2\">"+ffIn("am_resp_cpf","CPF","000.000.000-00")+ffIn("am_resp_rg","RG","")+"</div>";
-  h+=ffIn("am_resp_email","E-mail nominal","","email")+ffIn("am_resp_tel","Telefone","(00) 00000-0000");
+  h+="<div class=\"fgt\">Responsável / Sócio(s) administrador(es)</div>";
+  h+="<div id=\"am-socios\">"+socioBlockHTML(0)+"</div>";
+  h+="<button type=\"button\" class=\"add-doc-btn\" id=\"btn-add-socio\"><i class=\"ti ti-plus\"></i>Adicionar sócio</button>";
   h+="<div class=\"fgt\">Testemunha</div>"+ffIn("am_test_nome","Nome completo","");
   h+="<div class=\"fg2\">"+ffIn("am_test_cpf","CPF","000.000.000-00")+ffIn("am_test_email","E-mail","","email")+"</div>";
   h+="<div class=\"fgt\">Carta Anticorrupção</div><div class=\"fg2\">"+ffIn("am_local","Local","São Paulo / SP")+ffIn("am_data","Data","DD/MM/AAAA")+"</div>";
@@ -1216,12 +1329,22 @@ function renderFormAmil(){
   h+="<div class=\"copy-ok\" id=\"cp-amil\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
   return h;
 }
-window.limpar_amil=function(){["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_aliq","am_iss","am_resp_nome","am_resp_cpf","am_resp_rg","am_resp_email","am_resp_tel","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});};
+window.limpar_amil=function(){
+  ["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_aliq","am_iss","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});
+  var cont=document.getElementById("am-socios");
+  if(cont){amSocioNextIdx=1;cont.innerHTML=socioBlockHTML(0);atualizarBotoesRemoverSocio();}
+};
 window.copiar_amil=function(){
   var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
-  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+" Alíquota: "+v("am_aliq")+" ISS: "+v("am_iss")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc")+"\nResponsável: "+v("am_resp_nome")+" CPF: "+v("am_resp_cpf")+" RG: "+v("am_resp_rg")+"\nE-mail: "+v("am_resp_email")+" Tel: "+v("am_resp_tel")+"\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
+  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+" Alíquota: "+v("am_aliq")+" ISS: "+v("am_iss")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc");
+  document.querySelectorAll("#am-socios [data-socio-idx]").forEach(function(b,n){
+    var idx=b.dataset.socioIdx;
+    txt+="\nSócio "+(n+1)+": "+v("am_resp_nome_"+idx)+" CPF: "+v("am_resp_cpf_"+idx)+" RG: "+v("am_resp_rg_"+idx)+" E-mail: "+v("am_resp_email_"+idx)+" Tel: "+v("am_resp_tel_"+idx);
+  });
+  txt+="\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
   navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-amil");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
 };
+
 
 function renderFormAssim(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Ficha cadastral — Assim Saúde</div>";
