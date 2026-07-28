@@ -368,11 +368,13 @@ async function uploadArquivosCloudinary(){
     for(var j=0;j<files.length;j++){
       var f = files[j];
       var ext = f.name.split(".").pop().toLowerCase();
-      var isPdfOrZip = (ext==="pdf" || ext==="zip");
+      var isPdf = (ext==="pdf");
+      var isZip = (ext==="zip");
       var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
-      // image/upload só aceita imagem, pdf e zip (Cloudinary consegue tratá-los como "imagem");
-      // docx/xlsx e outros formatos precisam ir por raw/upload
-      var useImageEndpoint = isPdfOrZip || imgExts.indexOf(ext)>=0;
+      // image/upload só aceita imagem e pdf (Cloudinary consegue tratá-los como "imagem");
+      // zip, docx/xlsx e outros formatos precisam ir por raw/upload — o Cloudinary rejeita
+      // zip no endpoint de imagem com erro "Unsupported ZIP file"
+      var useImageEndpoint = isPdf || imgExts.indexOf(ext)>=0;
       var resourceType = useImageEndpoint ? "image" : "raw";
       try{
         // Converter para base64 igual ao formulário de boletos
@@ -396,11 +398,11 @@ async function uploadArquivosCloudinary(){
           fd.append("public_id", baseName+"_"+uniqueId+"."+ext);
         }
         var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
-        if(!r.ok){ var d=await r.json(); throw new Error("Cloudinary "+r.status+": "+(d.error&&d.error.message||r.statusText)); }
+        if(!r.ok){ var errData=await r.json(); throw new Error("Cloudinary "+r.status+": "+(errData.error&&errData.error.message||r.statusText)); }
         var data = await r.json();
         if(data.secure_url){
           var url = data.secure_url;
-          if(isPdfOrZip && !url.includes("fl_attachment")){
+          if(isPdf && !url.includes("fl_attachment")){
             url = url.replace("/upload/", "/upload/fl_attachment/");
           }
           // Garantir extensão correta somente para RAW (docx/xlsx etc — Cloudinary não detecta sozinho, pois enviamos via base64 sem nome de arquivo real).
@@ -1226,12 +1228,12 @@ function confirmarEnvio(){
         var partes = linha.split(" → ");
         var nome = partes[0] || "";
         var url  = partes[1] || "";
-        if(url && url !== "(erro no upload)"){
+        if(url && !url.startsWith("(erro")){
           linksHtml += "<div style=\"margin-bottom:8px\">";
           linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
           linksHtml += "</div>";
         } else {
-          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — erro no upload</p>";
+          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — "+(url||"erro no upload")+"</p>";
         }
       });
       linksHtml += "</div>";
