@@ -896,21 +896,25 @@ function validarCorretor(){
 }
 
 // ─── VALIDAÇÃO DE DOCUMENTOS OBRIGATÓRIOS ────────────────────────────────────
+function catEngajada(cat){
+  return cat.docs.some(function(doc,i){
+    var id=cat.id+"_"+i;
+    var preenchido = doc.campo ? (textos[id]&&textos[id].trim().length>0) : (arquivos[id]&&arquivos[id].length>0);
+    return preenchido || !!checked[id];
+  });
+}
 function limparDestaquesDocs(){
   document.querySelectorAll(".doc-item.missing").forEach(function(el){el.classList.remove("missing");});
 }
 function validarDocumentos(){
   limparDestaquesDocs();
-  if(!filtroDoc)return{ok:false,missing:[]};
+  if(!filtroDoc)return{ok:false,missing:[],nadaSelecionado:true};
   var d=dados[filtroDoc];
   if(d.form==="unimed")return{ok:true,missing:[]}; // fluxo passo a passo, sem anexos
   var missing=[];
   var catsProc=d.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
-  catsProc.forEach(function(cat){
-    var isNovo  = cat.id.indexOf("_n")!==-1;
-    var isTransf= cat.id.indexOf("_t")!==-1;
-    if(processoSel==="novo"   && isTransf && !isNovo) return;
-    if(processoSel==="transf" && isNovo   && !isTransf) return;
+  var catsExtra=d.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+  var validarCat=function(cat){
     cat.docs.forEach(function(doc,i){
       var id=cat.id+"_"+i;
       var preenchido = doc.campo ? (textos[id]&&textos[id].trim().length>0) : (arquivos[id]&&arquivos[id].length>0);
@@ -920,7 +924,22 @@ function validarDocumentos(){
         if(li)li.classList.add("missing");
       }
     });
-  });
+  };
+  var procEngajado = processoSel!=="" && catsProc.some(catEngajada);
+  if(procEngajado){
+    catsProc.forEach(function(cat){
+      var isNovo  = cat.id.indexOf("_n")!==-1;
+      var isTransf= cat.id.indexOf("_t")!==-1;
+      if(processoSel==="novo"   && isTransf && !isNovo) return;
+      if(processoSel==="transf" && isNovo   && !isTransf) return;
+      validarCat(cat);
+    });
+  }
+  var extraEngajadas = catsExtra.filter(catEngajada);
+  extraEngajadas.forEach(validarCat);
+  if(!procEngajado && extraEngajadas.length===0){
+    return{ok:false,missing:[],nadaSelecionado:true};
+  }
   return{ok:missing.length===0,missing:missing};
 }
 
@@ -966,12 +985,20 @@ function abrirModal(){
   if(!filtroDoc){alert("Selecione uma operadora.");return;}
   if(!validarCorretor())return;
   var d0=dados[filtroDoc];
-  if(d0.form!=="unimed" && d0.cats.some(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;}) && processoSel===""){
+  var catsProc0=d0.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra0=d0.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+  var procEngajado0 = catsProc0.some(catEngajada);
+  var extraEngajadas0 = catsExtra0.filter(catEngajada);
+  if(d0.form!=="unimed" && procEngajado0 && catsProc0.length>0 && processoSel===""){
     alert("Selecione o tipo de processo (Novo Cadastro ou Transferência) antes de enviar.");
     return;
   }
   var vd=validarDocumentos();
-  var vf=validarFormularioOperadora();
+  var vf=procEngajado0?validarFormularioOperadora():{ok:true,missing:[]};
+  if(vd.nadaSelecionado){
+    alert("Selecione o Novo Cadastro/Transferência ou preencha um dos Outros Processos antes de enviar.");
+    return;
+  }
   if(!vd.ok||!vf.ok){
     var msg="Não é possível enviar o processo:\n";
     if(vd.missing.length){
