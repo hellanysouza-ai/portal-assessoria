@@ -520,13 +520,13 @@ var dados={
       {t:"Código atual na Amil"},
       {t:"E-mail enviado à assessoria atual (substitui assinatura após 30 dias)"}
     ]},
-    {id:"amil_alt",titulo:"Alteração de comissionamento",ico:"ti-edit",obrig:false,
+    {id:"amil_alt",titulo:"Alteração de comissionamento",ico:"ti-edit",obrig:false,alternativo:true,
      info:"Para realizar alteração de comissionamento na Amil.",warn:null,
      docs:[
       {t:"Termo de Vinculação — assinado pela corretora e pela plataforma Affinity (apenas para corretoras cadastradas antes de outubro/2018)",dl:"amil_vinculacao"},
       {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"}
     ]},
-    {id:"amil_dir",titulo:"Código direto na Amil → Vinculação à plataforma",ico:"ti-link",obrig:false,
+    {id:"amil_dir",titulo:"Código direto na Amil → Vinculação à plataforma",ico:"ti-link",obrig:false,alternativo:true,
      info:"Quando o corretor possui código Direto na Amil e deseja se vincular à plataforma Affinity.",warn:null,
      docs:[
       {t:"Termo de Vinculação — apenas preenchido (será enviado para assinatura digital posteriormente)",dl:"amil_vinculacao"},
@@ -1040,12 +1040,14 @@ function abrirModal(){
   var catsExtra0=d0.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
   var procEngajado0 = catsProc0.some(catEngajada);
   var extraEngajadas0 = catsExtra0.filter(catEngajada);
+  var catsNormais0 = d0.cats.filter(function(c){return !c.alternativo;});
+  var catNormalEngajada0 = catsNormais0.some(catEngajada);
   if(procEngajado0 && catsProc0.length>0 && processoSel===""){
     alert("Selecione o tipo de processo (Novo Cadastro ou Transferência) antes de enviar.");
     return;
   }
   var vd=validarDocumentos();
-  var vf=procEngajado0?validarFormularioOperadora():{ok:true,missing:[]};
+  var vf=catNormalEngajada0?validarFormularioOperadora():{ok:true,missing:[]};
   if(vd.nadaSelecionado){
     alert("Selecione o Novo Cadastro/Transferência ou preencha um dos Outros Processos antes de enviar.");
     return;
@@ -1206,7 +1208,7 @@ function confirmarEnvio(){
     formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
       +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados — MedSênior</p>"
       +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
-      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Concessionária</td></tr>"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Concessionária (Corretor)</td></tr>"
       +mkFRow("Razão social",v("med_conc_razao"))
       +mkFRow("Código",v("med_conc_codigo"))
       +mkFRow("CNPJ",v("med_conc_cnpj"))
@@ -1508,7 +1510,7 @@ window.copiar_leve=function(){
 
 function renderFormMed(){
   var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados — MedSênior</div>";
-  h+="<div class=\"fgt\">Concessionária</div>"+ffIn("med_conc_razao","Razão social da concessionária","");
+  h+="<div class=\"fgt\">Concessionária (Corretor)</div>"+ffIn("med_conc_razao","Razão social da concessionária","");
   h+="<div class=\"fg2\">"+ffIn("med_conc_codigo","Código da concessionária","")+ffIn("med_conc_cnpj","CNPJ","")+"</div>";
   h+="<div class=\"fg3\">"+ffIn("med_conc_banco","Banco","")+ffIn("med_conc_ag","Agência","")+ffIn("med_conc_cc","Conta corrente","")+"</div>";
   h+="<div class=\"fg2\">"+ffIn("med_conc_tel","Telefone","")+ffIn("med_conc_email","E-mail","","email")+"</div>";
