@@ -249,6 +249,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
     <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
     <div class="chips" id="comm-chips">
       <div class="chip active" data-comm="todas">Todas</div>
+      <div class="chip" data-comm="alice">Alice</div>
       <div class="chip" data-comm="amil">Amil</div>
       <div class="chip" data-comm="assim">Assim Saúde</div>
       <div class="chip" data-comm="hapvida">Hapvida</div>
@@ -289,6 +290,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
       <div class="cf"><label>Nome completo *</label><input type="text" id="cor_nome" placeholder="Nome do corretor"></div>
       <div class="cf"><label>Telefone *</label><input type="tel" id="cor_tel" placeholder="(00) 00000-0000"></div>
       <div class="cf"><label>E-mail *</label><input type="email" id="cor_email" placeholder="email@empresa.com" autocomplete="email"></div>
+      <div class="cf"><label>Supervisor *</label><input type="text" id="cor_supervisor" placeholder="Nome do supervisor"></div>
     </div>
   </div>
 
@@ -296,7 +298,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
     <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
     <div class="chips" id="doc-chips">
       <div class="chip active" data-op="">Selecione...</div>
-      <div class="chip" data-op="alice" data-soon="1">Alice <span style="font-size:10px;background:#C9A84C;color:#fff;border-radius:4px;padding:1px 5px;margin-left:3px;">Em breve</span></div>
+      <div class="chip" data-op="alice">Alice</div>
       <div class="chip" data-op="amil">Amil</div>
       <div class="chip" data-op="assim_saude">Assim Saúde</div>
       <div class="chip" data-op="hapvida">Hapvida</div>
@@ -443,12 +445,13 @@ var FILES = {
   hapvida_checklist:    {url:BASE+"checklist-abertura-hapvida.xlsx",      label:"Checklist Abertura",     cls:"dl-excel"},
   leve_pdf:             {url:BASE+"formulario-particionamento-leve.pdf",   label:"Formulário PDF",         cls:"dl-pdf"},
   leve_doc:             {url:BASE+"formulario-particionamento-leve.docx",  label:"Formulário Word",        cls:"dl-word"},
+  leve_cadastramento:   {url:BASE+"formulario-cadastramento-leve.pdf",     label:"Formulário Cadastramento",cls:"dl-pdf"},
   med_checklist:        {url:BASE+"checklist-medsênior.docx",             label:"Checklist MedSênior",    cls:"dl-word"}
 };
 
 // ─── COMISSÕES ────────────────────────────────────────────────────────────────
 var comissoes=[
-  {op:"alice", nome:"Alice",prod:"PME",tot:"—",p1:"—",p2:"—",p3:"—",p4:"—",vit:"Em breve"},
+  {op:"alice", nome:"Alice",prod:"PME",tot:"260%",p1:"100%",p2:"100%",p3:"60%",p4:"–",vit:"1% vit."},
   {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
   {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
   {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"250%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"5×20%"},
@@ -489,7 +492,20 @@ document.getElementById("comm-chips").addEventListener("click",function(e){
 
 // ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
 var dados={
-  alice:{nome:"Alice",form:null,soon:true,cats:[]},
+  alice:{nome:"Alice",form:null,cats:[
+    {id:"alice_doc",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:"Todos os anexos devem ser enviados em PDF.",warn:null,
+     docs:[
+      {t:"Contrato social ou último aditivo"},
+      {t:"Cartão CNPJ — últimos 90 dias"},
+      {t:"Inscrição SUSEP"},
+      {t:"Comprovante de endereço — últimos 3 meses"},
+      {t:"RG e CPF do representante legal"},
+      {t:"Comprovante bancário"},
+      {t:"Regime de tributação"},
+      {t:"RG, CPF e comprovante de endereço dos sócios"}
+    ]}
+  ]},
   amil:{nome:"Amil",form:"amil",cats:[
     {id:"amil_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
      info:"CNAEs aceitos: 66.22.300 / 66.29.100 / 65.50.200. Multinotas somente se o corretor já estiver no Sis.",warn:null,
@@ -594,7 +610,8 @@ var dados={
     {id:"lev_form",titulo:"Formulário de particionamento",ico:"ti-forms",obrig:true,
      info:"Preencha os dados abaixo e anexe o formulário assinado (Opção 1 de particionamento).",warn:null,
      docs:[
-      {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"}
+      {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"},
+      {t:"Formulário para Cadastramento — preenchido e assinado",dl:"leve_cadastramento"}
     ]}
   ]},
   "medsênior":{nome:"MedSênior",form:"medsênior",cats:[
@@ -932,13 +949,14 @@ function getCorretor(){
     sis:   document.getElementById("cor_sis").value.trim(),
     nome:  document.getElementById("cor_nome").value.trim(),
     tel:   document.getElementById("cor_tel").value.trim(),
-    email: document.getElementById("cor_email").value.trim()
+    email: document.getElementById("cor_email").value.trim(),
+    supervisor: document.getElementById("cor_supervisor").value.trim()
   };
 }
 function validarCorretor(){
   var c=getCorretor();
   var ok=true;
-  ["cor_sis","cor_nome","cor_tel","cor_email"].forEach(function(id){
+  ["cor_sis","cor_nome","cor_tel","cor_email","cor_supervisor"].forEach(function(id){
     var el=document.getElementById(id);
     if(!el.value.trim()){el.classList.add("error");ok=false;}
     else el.classList.remove("error");
@@ -1067,7 +1085,7 @@ function abrirModal(){
   }
   var cor=getCorretor();
   var d=dados[filtroDoc];
-  var linhas=["<b>Corretor:</b> "+cor.nome+" | Sis: "+cor.sis,"<b>Telefone:</b> "+cor.tel+" | <b>E-mail:</b> "+cor.email,"<b>Operadora:</b> "+d.nome,""];
+  var linhas=["<b>Corretor:</b> "+cor.nome+" | Sis: "+cor.sis,"<b>Telefone:</b> "+cor.tel+" | <b>E-mail:</b> "+cor.email,"<b>Supervisor:</b> "+cor.supervisor,"<b>Operadora:</b> "+d.nome,""];
   d.cats.forEach(function(cat){
     var m=cat.docs.filter(function(_,i){return checked[cat.id+"_"+i];}).length;
     var arq=cat.docs.reduce(function(a,_,i){return a+((arquivos[cat.id+"_"+i]||[]).length);},0);
@@ -1260,6 +1278,7 @@ function confirmarEnvio(){
     corretor_sis:   cor.sis,
     corretor_tel:   cor.tel,
     corretor_email: cor.email,
+    corretor_supervisor: cor.supervisor,
     operadora:      d.nome,
     checklist:      checklist,
     checklist_html: checklistHtml,
