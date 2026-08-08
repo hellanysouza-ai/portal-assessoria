@@ -43,7 +43,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
 .comm-table tr:last-child td{border-bottom:none}
 .comm-table tr:nth-child(even) td{background:var(--gold-bg)}
 .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
-.pill-pme{background:#e8f4fd;color:#1565C0}.pill-pf{background:#e8f8ee;color:#2E7D32}.pill-pj{background:#fdf3e7;color:#a8731e}
+.pill-pme{background:#e8f4fd;color:#1565C0}.pill-pf{background:#e8f8ee;color:#2E7D32}.pill-pj{background:#fdf3e7;color:#a8731e}.pill-qc{background:#f0e8ef;color:#7B3A6E}
 .vit-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#e8f8ee;color:#2E7D32}
 .dash{color:#ccc}
 .comm-note{font-size:11px;color:#666;padding:8px 14px;background:var(--gold-bg);display:flex;align-items:flex-start;gap:6px}
@@ -255,6 +255,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
       <div class="chip" data-comm="hapvida">Hapvida</div>
       <div class="chip" data-comm="leve">Leve Saúde</div>
       <div class="chip" data-comm="medsênior">MedSênior</div>
+      <div class="chip" data-comm="qualicorp">Qualicorp</div>
       <div class="chip" data-comm="select">Select</div>
       <div class="chip" data-comm="unimed">Seguros Unimed</div>
     </div>
@@ -275,6 +276,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
     <div class="comm-note" id="comm-note-geral"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente.</span></div>
     <div class="comm-note" id="comm-note-select" style="display:none"><i class="ti ti-info-circle"></i><span>Select: demais parcelas após agenciamento = 10%/mês até completar 10 meses.</span></div>
     <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME: a partir da 4ª = 2% vitalício. Select PME: 3ª–7ª = 10%, a partir da 8ª = 2% vitalício.</span></div>
+    <div class="comm-note" id="comm-note-qualicorp" style="display:none"><i class="ti ti-info-circle"></i><span>Qualicorp: a 1ª parcela representa o repasse do 2º mês, a 2ª o 13º mês, e a 3ª o 25º mês de vigência (não são meses seguidos). O total não inclui o vitalício de 3%, que é pago à parte a partir de então, igual para todas as categorias.</span></div>
   </div>
   <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
 </div>
@@ -304,6 +306,7 @@ body{background:#f4f4f6;min-height:100vh;font-size:12px}
       <div class="chip" data-op="hapvida">Hapvida</div>
       <div class="chip" data-op="leve_saude">Leve Saúde</div>
       <div class="chip" data-op="medsênior">MedSênior</div>
+      <div class="chip" data-op="qualicorp">Qualicorp</div>
       <div class="chip" data-op="seguros_unimed">Seguros Unimed</div>
       <div class="chip" data-op="select">Select</div>
     </div>
@@ -446,6 +449,8 @@ var FILES = {
   leve_pdf:             {url:BASE+"formulario-particionamento-leve.pdf",   label:"Formulário PDF",         cls:"dl-pdf"},
   leve_doc:             {url:BASE+"formulario-particionamento-leve.docx",  label:"Formulário Word",        cls:"dl-word"},
   leve_cadastramento:   {url:BASE+"formulario-cadastramento-leve.pdf",     label:"Formulário Cadastramento",cls:"dl-pdf"},
+  qc_ficha:             {url:BASE+"ficha-cadastro-qualicorp.xlsx",         label:"Ficha Cadastro Qualicorp", cls:"dl-excel"},
+  qc_ferramenta:        {url:BASE+"ficha-ferramenta-digital-qualicorp.xlsx",label:"Ficha Ferramenta Digital", cls:"dl-excel"},
   med_checklist:        {url:BASE+"checklist-medsênior.docx",             label:"Checklist MedSênior",    cls:"dl-word"}
 };
 
@@ -464,6 +469,10 @@ var comissoes=[
   {op:"leve",     nome:"Leve Saúde",    prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"25%", p4:"25%",vit:"2% vit."},
   {op:"medsênior",nome:"MedSênior",     prod:"PF", tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"–"},
   {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Premium",tot:"90%",p1:"30%",p2:"30%",p3:"30%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Prime",tot:"60%",p1:"20%",p2:"20%",p3:"20%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Plus",tot:"60%",p1:"20%",p2:"20%",p3:"20%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Gold",tot:"30%",p1:"10%",p2:"10%",p3:"10%",p4:"–",vit:"3% vit."},
   {op:"select",   nome:"Select",        prod:"PF", tot:"200%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%"},
   {op:"select",   nome:"Select",        prod:"PME",tot:"300%",p1:"100%",p2:"50%", p3:"10%", p4:"10%",vit:"5×10%+2% vit."},
   {op:"select",   nome:"Select",        prod:"PJ", tot:"300%",p1:"100%",p2:"–",   p3:"–",   p4:"–",  vit:"10×10%+2% vit."},
@@ -472,7 +481,7 @@ var comissoes=[
 var filtroComm="todas";
 function renderComm(){
   var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
-  var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj"};
+  var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj","Premium":"pill pill-qc","Prime":"pill pill-qc","Plus":"pill pill-qc","Gold":"pill pill-qc","Livre":"pill pill-qc"};
   document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
     var vh=r.vit==="–"?"<span class=\"dash\">–</span>":r.vit==="Em breve"?"<span class=\"vit-pill\" style=\"background:#fff3dc;color:#b07800\">Em breve</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
     var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
@@ -488,6 +497,8 @@ document.getElementById("comm-chips").addEventListener("click",function(e){
   if(noteSelect)noteSelect.style.display=(filtroComm==="select"||filtroComm==="todas")?"flex":"none";
   var noteAssim=document.getElementById("comm-note-assim");
   if(noteAssim)noteAssim.style.display=(filtroComm==="assim"||filtroComm==="todas")?"flex":"none";
+  var noteQC=document.getElementById("comm-note-qualicorp");
+  if(noteQC)noteQC.style.display=(filtroComm==="qualicorp"||filtroComm==="todas")?"flex":"none";
 });
 
 // ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
@@ -624,6 +635,22 @@ var dados={
       {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"},
       {t:"Documento do Contador — informando o regime tributário da empresa. Se Simples Nacional, anexar PGDAS mais atual",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"}
     ]},
+  ]},
+  qualicorp:{nome:"Qualicorp",form:null,cats:[
+    {id:"qc_doc",titulo:"Documento para abertura de código de comercialização",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
+     docs:[
+      {t:"Contrato Social e alterações, se houver"},
+      {t:"CNPJ válido — Cartão CNPJ"},
+      {t:"Documentos dos sócios — RG / CPF"},
+      {t:"Comprovante de endereço dos sócios — contas fixas"},
+      {t:"Comprovante de endereço da corretora"},
+      {t:"Dados bancários: conta corrente, agência e banco — dados por escrito não serão aceitos"},
+      {t:"Telefone para contato",campo:true},
+      {t:"E-mail pessoal do(s) Signatário(s) — sócio responsável pela corretora",campo:true},
+      {t:"Ficha de cadastro Qualicorp — preenchida",dl:"qc_ficha"},
+      {t:"Ficha de cadastro da ferramenta digital de vendas — preenchida",dl:"qc_ferramenta"}
+    ]}
   ]},
   seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[
     {id:"unimed_n",titulo:"Novo cadastro — informações para enviar junto ao código",ico:"ti-user-plus",docs:[
